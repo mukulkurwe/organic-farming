@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS farms (
+  id SERIAL PRIMARY KEY,
+  farmer_id INTEGER,
+  name TEXT,
+  location TEXT,
+  total_area FLOAT,
+  boundary JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

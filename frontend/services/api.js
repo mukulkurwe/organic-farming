@@ -1,0 +1,28 @@
+// frontend/src/services/api.js
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+});
+
+export default api;
+
+
+// new code
+// import axios from "axios";
+
+// const api = axios.create({
+//   baseURL: "http://localhost:5000/api",
+// });
+
+// api.interceptors.request.use((config) => {
+//   if (typeof window !== "undefined") {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//   }
+//   return config;
+// });
+
+// export default api;
