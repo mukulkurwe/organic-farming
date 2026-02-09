@@ -21,3 +21,16 @@ export default pool;
 //   slope_percent NUMERIC,
 //   risk_level VARCHAR(10)
 // );
+
+// CREATE TABLE IF NOT EXISTS landmapping (
+//         id SERIAL PRIMARY KEY,
+//         user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+//         name VARCHAR(100) NOT NULL,
+//         location VARCHAR(150),
+//         total_area NUMERIC,
+//         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//       );
+
+
+// ALTER TABLE farms
+//       ADD COLUMN IF NOT EXISTS boundary JSONB
