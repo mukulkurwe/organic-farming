@@ -13,9 +13,11 @@ export default function NewActivityPage() {
   const [activityType, setActivityType] = useState("");
   const [cropId, setCropId] = useState("");
   const [remarks, setRemarks] = useState("");
+
   const [inputs, setInputs] = useState([
     { input_id: "", quantity: "", unit: "", method: "" },
   ]);
+
   const [selectedWorkers, setSelectedWorkers] = useState([]);
 
   const [workers, setWorkers] = useState([]);
@@ -30,7 +32,7 @@ export default function NewActivityPage() {
   // TODO: replace with logged-in user id
   const createdBy = 1;
 
-  // Load master data on mount
+  // Load master data once
   useEffect(() => {
     async function loadMaster() {
       try {
@@ -38,7 +40,7 @@ export default function NewActivityPage() {
           apiGet("/farms"),
           apiGet("/inputs"),
           apiGet("/crops"),
-          apiGet("/workers", { farm_id: 1 }), // temp farm id
+          apiGet("/workers", { farm_id: 1 }), // temp
         ]);
         setFarms(farmsRes || []);
         setAvailableInputs(inputsRes || []);
@@ -158,6 +160,7 @@ export default function NewActivityPage() {
         <form onSubmit={handleSubmit} className="mt-6 space-y-6">
           {/* Basic info */}
           <div className="grid md:grid-cols-2 gap-4">
+            {/* Date */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Date
@@ -166,10 +169,12 @@ export default function NewActivityPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
 
+            {/* Farm */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Farm
@@ -177,7 +182,8 @@ export default function NewActivityPage() {
               <select
                 value={farmId}
                 onChange={(e) => setFarmId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select farm</option>
                 {farms.map((f) => (
@@ -188,6 +194,7 @@ export default function NewActivityPage() {
               </select>
             </div>
 
+            {/* Zone / Plot */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Zone / Plot
@@ -195,7 +202,8 @@ export default function NewActivityPage() {
               <select
                 value={zoneId}
                 onChange={(e) => setZoneId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select zone</option>
                 {zones.map((z) => (
@@ -206,6 +214,7 @@ export default function NewActivityPage() {
               </select>
             </div>
 
+            {/* Crop */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Crop (optional)
@@ -213,7 +222,8 @@ export default function NewActivityPage() {
               <select
                 value={cropId}
                 onChange={(e) => setCropId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select crop</option>
                 {crops.map((c) => (
@@ -268,12 +278,14 @@ export default function NewActivityPage() {
                   key={idx}
                   className="grid md:grid-cols-4 gap-3 bg-gray-50 rounded-xl p-3"
                 >
+                  {/* Input used */}
                   <select
                     value={row.input_id}
                     onChange={(e) =>
                       handleInputChange(idx, "input_id", e.target.value)
                     }
-                    className="rounded-lg border border-gray-300 px-3 py-2 bg-white text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 bg-white"
                   >
                     <option value="">Input used</option>
                     {availableInputs.map((inp) => (
@@ -282,6 +294,8 @@ export default function NewActivityPage() {
                       </option>
                     ))}
                   </select>
+
+                  {/* Quantity */}
                   <input
                     type="number"
                     value={row.quantity}
@@ -289,23 +303,30 @@ export default function NewActivityPage() {
                       handleInputChange(idx, "quantity", e.target.value)
                     }
                     placeholder="Qty"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 placeholder:text-gray-400 bg-white"
                   />
+
+                  {/* Unit */}
                   <input
                     value={row.unit}
                     onChange={(e) =>
                       handleInputChange(idx, "unit", e.target.value)
                     }
                     placeholder="Unit (kg/L)"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 placeholder:text-gray-400 bg-white"
                   />
+
+                  {/* Method */}
                   <input
                     value={row.method}
                     onChange={(e) =>
                       handleInputChange(idx, "method", e.target.value)
                     }
                     placeholder="Method (manual / drip...)"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 placeholder:text-gray-400 bg-white"
                   />
                 </div>
               ))}
@@ -347,8 +368,10 @@ export default function NewActivityPage() {
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Soil moisture, uniform emergence, pest spray only for tomato..."
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                         text-gray-900 placeholder:text-gray-400 bg-white
+                         focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
 
