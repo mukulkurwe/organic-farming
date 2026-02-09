@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiGet } from "../../../src/lib/api.js";
+import { apiGet } from "../../../lib/api.js";
 
 function getMonthRange(date = new Date()) {
   const start = new Date(date.getFullYear(), date.getMonth(), 1);
