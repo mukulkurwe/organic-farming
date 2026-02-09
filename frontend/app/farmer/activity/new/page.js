@@ -2,7 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiGet, apiPost } from "../../../../src/lib/api.js";
+// import { apiGet, apiPost } from "../../../../src/lib/api.js";
+import { apiGet, apiPost } from "@/lib/api";
+
 
 export default function NewActivityPage() {
   const [date, setDate] = useState(() =>
