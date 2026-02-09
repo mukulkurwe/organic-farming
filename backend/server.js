@@ -10,6 +10,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import farmRoutes from "./routes/farmRoutes.js";
+import activityRoutes from "./routes/activities.js";
+// import farmingRoutes from "./routes/farms.js";
+// import workerRoutes from "./routes/workers.js";
 
 import plotsRouter from "./routes/plots.js";
 
@@ -22,6 +25,9 @@ app.use(express.json());
 
 app.use("/api", farmRoutes);
 app.use("/api", plotsRouter);
+app.use("/api/activities", activityRoutes);
+app.use("/api/farms", farmRoutes);
+// app.use("/api/workers", workerRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`🚀 Server running on port ${process.env.PORT}`);
