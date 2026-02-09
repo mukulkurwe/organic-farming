@@ -1,29 +1,36 @@
-// app/farmer/activity/new/page.js
+// frontend/app/farmer/activity/new/page.js
 "use client";
 
 import { useEffect, useState } from "react";
 import { apiGet, apiPost } from "../../../../src/lib/api.js";
 
 export default function NewActivityPage() {
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() =>
+    new Date().toISOString().slice(0, 10)
+  );
   const [farmId, setFarmId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [activityType, setActivityType] = useState("");
   const [cropId, setCropId] = useState("");
   const [remarks, setRemarks] = useState("");
-  const [inputs, setInputs] = useState([{ input_id: "", quantity: "", unit: "", method: "" }]);
+  const [inputs, setInputs] = useState([
+    { input_id: "", quantity: "", unit: "", method: "" },
+  ]);
   const [selectedWorkers, setSelectedWorkers] = useState([]);
+
   const [workers, setWorkers] = useState([]);
   const [farms, setFarms] = useState([]);
   const [zones, setZones] = useState([]);
   const [crops, setCrops] = useState([]);
   const [availableInputs, setAvailableInputs] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   // TODO: replace with logged-in user id
   const createdBy = 1;
 
+  // Load master data on mount
   useEffect(() => {
     async function loadMaster() {
       try {
@@ -31,19 +38,20 @@ export default function NewActivityPage() {
           apiGet("/farms"),
           apiGet("/inputs"),
           apiGet("/crops"),
-          apiGet("/workers", { farm_id: 1 }), // temp
+          apiGet("/workers", { farm_id: 1 }), // temp farm id
         ]);
-        setFarms(farmsRes);
-        setAvailableInputs(inputsRes);
-        setCrops(cropsRes);
-        setWorkers(workersRes);
+        setFarms(farmsRes || []);
+        setAvailableInputs(inputsRes || []);
+        setCrops(cropsRes || []);
+        setWorkers(workersRes || []);
       } catch (err) {
-        console.error(err);
+        console.error("loadMaster error", err);
       }
     }
     loadMaster();
   }, []);
 
+  // Load zones when farm changes
   useEffect(() => {
     async function loadZones() {
       if (!farmId) {
@@ -52,9 +60,9 @@ export default function NewActivityPage() {
       }
       try {
         const res = await apiGet(`/farms/${farmId}/zones`);
-        setZones(res);
+        setZones(res || []);
       } catch (err) {
-        console.error(err);
+        console.error("loadZones error", err);
       }
     }
     loadZones();
@@ -80,12 +88,17 @@ export default function NewActivityPage() {
   };
 
   const addInputRow = () => {
-    setInputs((prev) => [...prev, { input_id: "", quantity: "", unit: "", method: "" }]);
+    setInputs((prev) => [
+      ...prev,
+      { input_id: "", quantity: "", unit: "", method: "" },
+    ]);
   };
 
   const toggleWorker = (workerId) => {
     setSelectedWorkers((prev) =>
-      prev.includes(workerId) ? prev.filter((id) => id !== workerId) : [...prev, workerId]
+      prev.includes(workerId)
+        ? prev.filter((id) => id !== workerId)
+        : [...prev, workerId]
     );
   };
 
@@ -116,13 +129,12 @@ export default function NewActivityPage() {
 
       await apiPost("/activities", body);
       setMessage("Activity saved successfully.");
-      // reset minimal fields
       setActivityType("");
       setRemarks("");
       setInputs([{ input_id: "", quantity: "", unit: "", method: "" }]);
       setSelectedWorkers([]);
     } catch (err) {
-      console.error(err);
+      console.error("submit error", err);
       setMessage("Failed to save activity.");
     } finally {
       setLoading(false);
@@ -130,7 +142,7 @@ export default function NewActivityPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex justify-center py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-green-50 to-green-100 flex justify-center py-8">
       <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8">
         <h1 className="text-2xl font-bold text-gray-800 text-center">
           Add Field Activity
@@ -154,9 +166,10 @@ export default function NewActivityPage() {
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Farm
@@ -164,7 +177,7 @@ export default function NewActivityPage() {
               <select
                 value={farmId}
                 onChange={(e) => setFarmId(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select farm</option>
                 {farms.map((f) => (
@@ -174,6 +187,7 @@ export default function NewActivityPage() {
                 ))}
               </select>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Zone / Plot
@@ -181,7 +195,7 @@ export default function NewActivityPage() {
               <select
                 value={zoneId}
                 onChange={(e) => setZoneId(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select zone</option>
                 {zones.map((z) => (
@@ -191,6 +205,7 @@ export default function NewActivityPage() {
                 ))}
               </select>
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Crop (optional)
@@ -198,7 +213,7 @@ export default function NewActivityPage() {
               <select
                 value={cropId}
                 onChange={(e) => setCropId(e.target.value)}
-                className="w-full rounded-lg border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
               >
                 <option value="">Select crop</option>
                 {crops.map((c) => (
@@ -258,7 +273,7 @@ export default function NewActivityPage() {
                     onChange={(e) =>
                       handleInputChange(idx, "input_id", e.target.value)
                     }
-                    className="rounded-lg border px-3 py-2 bg-white text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 bg-white text-sm"
                   >
                     <option value="">Input used</option>
                     {availableInputs.map((inp) => (
@@ -274,7 +289,7 @@ export default function NewActivityPage() {
                       handleInputChange(idx, "quantity", e.target.value)
                     }
                     placeholder="Qty"
-                    className="rounded-lg border px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                   />
                   <input
                     value={row.unit}
@@ -282,7 +297,7 @@ export default function NewActivityPage() {
                       handleInputChange(idx, "unit", e.target.value)
                     }
                     placeholder="Unit (kg/L)"
-                    className="rounded-lg border px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                   />
                   <input
                     value={row.method}
@@ -290,7 +305,7 @@ export default function NewActivityPage() {
                       handleInputChange(idx, "method", e.target.value)
                     }
                     placeholder="Method (manual / drip...)"
-                    className="rounded-lg border px-3 py-2 text-sm"
+                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
                   />
                 </div>
               ))}
@@ -332,7 +347,7 @@ export default function NewActivityPage() {
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               placeholder="Soil moisture, uniform emergence, pest spray only for tomato..."
             />
           </div>
