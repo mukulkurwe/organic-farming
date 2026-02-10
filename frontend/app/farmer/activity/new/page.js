@@ -112,24 +112,26 @@ export default function NewActivityPage() {
     setMessage("");
 
     try {
-      const body = {
-        farm_id: Number(farmId),
-        zone_id: Number(zoneId),
-        date,
-        activity_type: activityType,
-        crop_id: cropId ? Number(cropId) : null,
-        remarks,
-        created_by: createdBy,
-        inputs: inputs
-          .filter((i) => i.input_id)
-          .map((i) => ({
-            input_id: Number(i.input_id),
-            quantity: i.quantity ? Number(i.quantity) : null,
-            unit: i.unit,
-            method: i.method,
-          })),
-        workers: selectedWorkers.map((id) => ({ worker_id: id })),
-      };
+           const body = {
+  farm_id: Number(farmId),
+  zone_id: zoneId ? Number(zoneId) : null,       // ✅ avoid 0
+  date,
+  activity_type: activityType,
+  crop_id: cropId ? Number(cropId) : null,
+  remarks,
+  created_by: createdBy,
+  inputs: inputs  // ignored by backend for now, but OK
+    .filter((i) => i.input_id)
+    .map((i) => ({
+      input_id: Number(i.input_id),
+      quantity: i.quantity ? Number(i.quantity) : null,
+      unit: i.unit,
+      method: i.method,
+    })),
+  workers: selectedWorkers.map((id) => ({ worker_id: id })),
+};
+
+
 
       await apiPost("/activities", body);
       setMessage("Activity saved successfully.");
