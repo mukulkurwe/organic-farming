@@ -9,6 +9,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import pool from "./config/db.js"; // ✅ THIS LINE
 import farmRoutes from "./routes/farmRoutes.js";
 import activityRoutes from "./routes/activities.js";
 // import farmingRoutes from "./routes/farms.js";
@@ -62,16 +63,19 @@ app.get("/api/farms/:id/zones", async (req, res) => {
 /* ==========================================
    2. INPUTS (seeds, fertilizer, water...)
 ========================================== */
-
+// ---- INPUTS ----
 app.get("/api/inputs", async (_req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM inputs ORDER BY name");
+    const result = await pool.query(
+      "SELECT id, name, type, unit_default, created_at FROM inputs ORDER BY name"
+    );
     res.json(result.rows);
   } catch (err) {
-    console.error("GET /api/inputs error", err);
-    res.status(500).json({ message: "Failed to fetch inputs" });
+    console.error("GET /api/inputs error:", err.message);
+    res.status(500).json({ message: "Failed to fetch inputs", error: err.message });
   }
 });
+
 
 /* ==========================================
    3. CROPS
