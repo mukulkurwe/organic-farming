@@ -1,267 +1,19 @@
-// // app/supervisor/dashboard/page.js
-// "use client";
 
-// import { useEffect, useState } from "react";
-// import { apiGet } from "../../../lib/api.js";
-
-// function getMonthRange(date = new Date()) {
-//   const start = new Date(date.getFullYear(), date.getMonth(), 1);
-//   const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-//   const toIso = (d) => d.toISOString().slice(0, 10);
-//   return { from: toIso(start), to: toIso(end) };
-// }
-
-// export default function SupervisorDashboard() {
-//   const [calendarData, setCalendarData] = useState([]);
-//   const [selectedDate, setSelectedDate] = useState(null);
-//   const [dayActivities, setDayActivities] = useState([]);
-//   const [loadingDay, setLoadingDay] = useState(false);
-
-//   const { from, to } = getMonthRange();
-//   const farmId = 1; // TODO: based on logged-in supervisor
-
-//   useEffect(() => {
-//     async function loadCalendar() {
-//       try {
-//         const data = await apiGet("/activities/calendar", {
-//           farm_id: farmId,
-//           from,
-//           to,
-//         });
-//         setCalendarData(data);
-//       } catch (err) {
-//         console.error(err);
-//       }
-//     }
-//     loadCalendar();
-//   }, [farmId, from, to]);
-
-//   const handleSelectDate = async (date) => {
-//     setSelectedDate(date);
-//     setLoadingDay(true);
-//     try {
-//       const data = await apiGet("/activities", { farm_id: farmId, date });
-//       setDayActivities(data);
-//     } catch (err) {
-//       console.error(err);
-//     } finally {
-//       setLoadingDay(false);
-//     }
-//   };
-
-//   // Helper map: date -> summary
-//   const mapByDate = calendarData.reduce((acc, row) => {
-//     acc[row.date] = row;
-//     return acc;
-//   }, {});
-
-//   // Build array of days for grid
-//   const today = new Date();
-//   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-//   const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-//   const days = [];
-//   for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 1)) {
-//     days.push(new Date(d));
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 px-6 py-6">
-//       <header className="flex items-center justify-between mb-6">
-//         <div>
-//           <h1 className="text-2xl font-bold text-gray-800">
-//             Supervisor Dashboard
-//           </h1>
-//           <p className="text-sm text-gray-500">
-//             Month overview of field activities
-//           </p>
-//         </div>
-//         <div className="text-sm text-gray-600">
-//           Farm: <span className="font-semibold">Farm 1</span>
-//         </div>
-//       </header>
-
-//       <div className="grid lg:grid-cols-[2fr,1.2fr] gap-6">
-//         {/* Calendar */}
-//         <div className="bg-white rounded-2xl shadow-sm p-4">
-//           <div className="flex items-center justify-between mb-4">
-//             <h2 className="font-semibold text-gray-800 text-lg">
-//               Calendar (This Month)
-//             </h2>
-//             <span className="text-xs text-gray-500">
-//               {from} → {to}
-//             </span>
-//           </div>
-
-//           <div className="grid grid-cols-7 text-xs font-medium text-gray-500 mb-2">
-//             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-//               <div key={d} className="text-center">
-//                 {d}
-//               </div>
-//             ))}
-//           </div>
-
-//           <div className="grid grid-cols-7 gap-1 text-xs">
-//             {days.map((d) => {
-//               const iso = d.toISOString().slice(0, 10);
-//               const dayNum = d.getDate();
-//               const summary = mapByDate[iso];
-//               const total = summary ? Number(summary.total_activities) : 0;
-//               const isToday =
-//                 iso === new Date().toISOString().slice(0, 10);
-//               const isSelected = iso === selectedDate;
-
-//               return (
-//                 <button
-//                   key={iso}
-//                   type="button"
-//                   onClick={() => handleSelectDate(iso)}
-//                   className={`h-20 rounded-xl border flex flex-col items-start p-1.5 ${
-//                     isSelected
-//                       ? "border-green-500 bg-green-50"
-//                       : "border-gray-200 bg-white hover:border-green-400"
-//                   }`}
-//                 >
-//                   <span
-//                     className={`w-6 h-6 flex items-center justify-center rounded-full text-xs ${
-//                       isToday ? "bg-green-500 text-white" : "text-gray-700"
-//                     }`}
-//                   >
-//                     {dayNum}
-//                   </span>
-//                   <span className="mt-auto text-[10px] text-gray-500">
-//                     {total > 0 ? `${total} activities` : "No data"}
-//                   </span>
-//                 </button>
-//               );
-//             })}
-//           </div>
-//         </div>
-
-//         {/* Day details */}
-//         <div className="bg-white rounded-2xl shadow-sm p-4 flex flex-col">
-//           <h2 className="font-semibold text-gray-800 text-lg mb-1">
-//             Day Details
-//           </h2>
-//           <p className="text-xs text-gray-500 mb-3">
-//             {selectedDate || "Select a date from the calendar"}
-//           </p>
-
-//           <div className="flex-1 overflow-y-auto">
-//             {loadingDay && (
-//               <p className="text-sm text-gray-500">Loading activities...</p>
-//             )}
-
-//             {!loadingDay && selectedDate && dayActivities.length === 0 && (
-//               <p className="text-sm text-gray-500">
-//                 No activities recorded for this date.
-//               </p>
-//             )}
-
-//             <div className="space-y-3">
-//               {dayActivities.map((a) => (
-//                 <div
-//                   key={a.id}
-//                   className="border border-gray-200 rounded-xl p-3 text-sm"
-//                 >
-//                   <div className="flex justify-between mb-1">
-//                     <div className="font-semibold text-gray-800">
-//                       {a.zone_name || "Zone"} •{" "}
-//                       <span className="capitalize">
-//                         {a.activity_type.replace("_", " ")}
-//                       </span>
-//                     </div>
-//                     {a.crop_name && (
-//                       <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-//                         {a.crop_name}
-//                       </span>
-//                     )}
-//                   </div>
-//                   {a.remarks && (
-//                     <p className="text-xs text-gray-600">{a.remarks}</p>
-//                   )}
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 "use client";
 
-import { useState } from "react";
-
-const monthName = "March 2025";
-
-// Dummy data for calendar
-const calendarDays = [
-  { date: "2025-03-01", day: 1, label: "Z1: Sow×1" },
-  { date: "2025-03-02", day: 2, label: "Z2: Irr×2" },
-  { date: "2025-03-04", day: 4, label: "Z1: Fert×1" },
-  { date: "2025-03-07", day: 7, label: "Z3: Irr×1" },
-  { date: "2025-03-12", day: 12, label: "Z2: Pest×1\nZ2: Irr×2" },
-  { date: "2025-03-13", day: 13, label: "Z1: Sow×1" },
-  { date: "2025-03-18", day: 18, label: "Z1: Irr×3" },
-];
-
-// Dummy activities for selected day
-const activitiesFor12th = [
-  {
-    id: 1,
-    type: "Pest Control Spray",
-    zone: "Zone 2",
-    crop: "Tomato",
-    time: "10:30 AM",
-    inputs: "Organic pesticide 20L (Manual Spraying)",
-    workers: ["Ram", "Sita"],
-    remarks: "Pest spray only for tomato section",
-  },
-  {
-    id: 2,
-    type: "Irrigation - Drip System",
-    zone: "Zone 2",
-    crop: "Chilli",
-    time: "7:00 AM",
-    inputs: "Water 500L (Drip Irrigation)",
-    workers: ["Raju"],
-    remarks: "Good soil moisture level",
-  },
-  {
-    id: 3,
-    type: "Irrigation - Manual",
-    zone: "Zone 2",
-    crop: "Bitter Gourd",
-    time: "3:00 PM",
-    inputs: "Water 300L (Manual Watering)",
-    workers: ["Ram"],
-    remarks: "Evening watering session",
-  },
-];
-
-const activityTypeFilters = [
-  "All",
-  "Sowing",
-  "Irrigation",
-  "Pest",
-  "Fertilizer",
-  "Pest Control Spray",
-];
-
-const zoneFilterOptions = ["All Zones", "Zone 1", "Zone 2", "Zone 3"];
-const activityFilterOptions = ["All Activities", "Sowing", "Irrigation", "Pest"];
-const workerFilterOptions = ["All Workers", "Ram", "Sita", "Raju"];
+import { useEffect, useMemo, useState } from "react";
+import { apiGet } from "@/lib/api";
 
 function FilterPill({ label, isActive, onClick }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`px-3 py-1 rounded-full text-xs font-medium border ${
+      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
         isActive
-          ? "bg-green-600 text-white border-green-600"
-          : "bg-white text-gray-700 border-gray-300 hover:bg-green-50"
+          ? "bg-blue-500 text-white shadow-md"
+          : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-300"
       }`}
     >
       {label}
@@ -269,83 +21,287 @@ function FilterPill({ label, isActive, onClick }) {
   );
 }
 
+function StatCard({ label, value, subLabel, color = "green" }) {
+  const colorClasses = {
+    green: "border-l-green-500",
+    blue: "border-l-blue-500",
+    red: "border-l-red-500",
+    orange: "border-l-orange-500",
+  };
+
+  return (
+    <div className={`bg-white rounded-lg shadow-sm border-l-4 ${colorClasses[color]} p-5`}>
+      <div className="text-sm text-gray-600 font-medium">{label}</div>
+      <div className="mt-2 text-3xl font-bold text-gray-800">{value}</div>
+      <div className="mt-1 text-xs text-gray-500">{subLabel}</div>
+    </div>
+  );
+}
+
+function ChartCard({ title, children }) {
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+      <div className="flex items-center gap-2 text-base font-semibold text-gray-800 mb-4">
+        <span className="text-blue-500">📊</span>
+        {title}
+      </div>
+      <div>{children}</div>
+    </div>
+  );
+}
+
 export default function SupervisorDashboardPage() {
-  const [selectedDate, setSelectedDate] = useState("2025-03-12");
+  const farmId = 1;
+
+  const [selectedDate, setSelectedDate] = useState("");
+  const [currentMonth, setCurrentMonth] = useState("2025-03");
+
   const [zoneFilter, setZoneFilter] = useState("All Zones");
-  const [activityFilter, setActivityFilter] = useState("All Activities");
-  const [workerFilter, setWorkerFilter] = useState("All Workers");
   const [activityTypeFilter, setActivityTypeFilter] = useState("All");
 
-  // In future, filter based on selectedDate & filters. For now, we always show activitiesFor12th
-  const visibleActivities = activitiesFor12th.filter((act) => {
-    if (
-      activityTypeFilter !== "All" &&
-      !act.type.toLowerCase().includes(activityTypeFilter.toLowerCase())
-    ) {
-      return false;
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const activityTypeFilters = [
+    "All",
+    "Sowing",
+    "Irrigation",
+    "Pest",
+    "Fertilizer",
+  ];
+
+  // Fetch month data
+  useEffect(() => {
+    async function loadMonth() {
+      try {
+        setLoading(true);
+        const data = await apiGet("/supervisor/activities/month", {
+          farm_id: farmId,
+          month: currentMonth,
+        });
+
+        setActivities(data || []);
+
+        if (data && data.length > 0) {
+          const first = new Date(data[0].date).toISOString().slice(0, 10);
+          setSelectedDate((prev) => prev || first);
+        } else {
+          setSelectedDate("");
+        }
+      } catch (err) {
+        console.error("loadMonth error", err);
+      } finally {
+        setLoading(false);
+      }
     }
-    if (zoneFilter !== "All Zones" && act.zone !== zoneFilter) return false;
-    if (workerFilter !== "All Workers") {
-      if (!act.workers.includes(workerFilter)) return false;
+
+    loadMonth();
+  }, [currentMonth]);
+
+  // Group activities by date
+  const activitiesByDate = useMemo(() => {
+    const map = {};
+    for (const a of activities) {
+      const key = new Date(a.date).toISOString().slice(0, 10);
+      if (!map[key]) map[key] = [];
+      map[key].push(a);
     }
-    // activityFilter (broad category) can be wired later
-    return true;
-  });
+    return map;
+  }, [activities]);
 
-  // Build a simple 5-week matrix for calendar (not a real calendar calculation)
-  const daysInMonth = 31;
-  const firstWeekdayOffset = 5; // pretend 1st March is Saturday (0=Mon,...6=Sun)
+  // Build labels for calendar
+  const dayLabels = useMemo(() => {
+    const labels = {};
 
-  const calendarCells = [];
-  for (let i = 0; i < firstWeekdayOffset; i++) {
-    calendarCells.push(null); // empty cells before 1st
-  }
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dayInfo = calendarDays.find((c) => c.day === d) || {
-      day: d,
-      label: "",
-    };
-    calendarCells.push(dayInfo);
-  }
+    Object.entries(activitiesByDate).forEach(([dateKey, list]) => {
+      const summary = {};
 
-  const weeks = [];
-  for (let i = 0; i < calendarCells.length; i += 7) {
-    weeks.push(calendarCells.slice(i, i + 7));
-  }
+      for (const a of list) {
+        const zone = a.zone_name || "Z?";
+        const type = a.activity_type || "other";
+
+        const short =
+          type === "sowing"
+            ? "Sow"
+            : type === "irrigation"
+            ? "Irr"
+            : type === "pest_spray"
+            ? "Pest"
+            : type === "biofertilizer"
+            ? "Bio"
+            : type === "weeding"
+            ? "Weed"
+            : type === "harvest"
+            ? "Hrv"
+            : "Act";
+
+        const key = `${zone}-${short}`;
+        if (!summary[key]) summary[key] = { zone, short, count: 0, type };
+        summary[key].count++;
+      }
+
+      labels[dateKey] = Object.values(summary);
+    });
+
+    return labels;
+  }, [activitiesByDate]);
+
+  // Calendar calculations
+  const [year, monthIndex] = useMemo(() => {
+    const [y, m] = currentMonth.split("-").map(Number);
+    return [y, m - 1];
+  }, [currentMonth]);
+
+  const monthName = useMemo(() => {
+    return new Date(year, monthIndex, 1).toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+  }, [year, monthIndex]);
+
+  const daysInMonth = useMemo(() => {
+    return new Date(year, monthIndex + 1, 0).getDate();
+  }, [year, monthIndex]);
+
+  const firstWeekdayOffset = useMemo(() => {
+    const jsDay = new Date(year, monthIndex, 1).getDay();
+    return (jsDay + 6) % 7;
+  }, [year, monthIndex]);
+
+  const calendarCells = useMemo(() => {
+    const cells = [];
+    for (let i = 0; i < firstWeekdayOffset; i++) cells.push(null);
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateKey = `${year}-${String(monthIndex + 1).padStart(
+        2,
+        "0"
+      )}-${String(d).padStart(2, "0")}`;
+
+      cells.push({
+        date: dateKey,
+        day: d,
+        labels: dayLabels[dateKey] || [],
+      });
+    }
+
+    return cells;
+  }, [year, monthIndex, daysInMonth, firstWeekdayOffset, dayLabels]);
+
+  const weeks = useMemo(() => {
+    const w = [];
+    for (let i = 0; i < calendarCells.length; i += 7) {
+      w.push(calendarCells.slice(i, i + 7));
+    }
+    return w;
+  }, [calendarCells]);
+
+  // Filtered activities for selected day
+  const visibleActivities = useMemo(() => {
+    const list = activitiesByDate[selectedDate] || [];
+
+    return list.filter((a) => {
+      if (zoneFilter !== "All Zones" && a.zone_name !== zoneFilter) return false;
+
+      if (activityTypeFilter !== "All") {
+        const label = activityTypeFilter.toLowerCase();
+        const t = (a.activity_type || "").toLowerCase();
+
+        if (label === "pest") {
+          if (!t.includes("pest")) return false;
+        } else if (label === "fertilizer") {
+          if (!t.includes("fert")) return false;
+        } else if (!t.includes(label)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [activitiesByDate, selectedDate, zoneFilter, activityTypeFilter]);
+
+  // Build zone dropdown from data
+  const zoneOptions = useMemo(() => {
+    const set = new Set();
+    for (const a of activities) {
+      if (a.zone_name) set.add(a.zone_name);
+    }
+    return ["All Zones", ...Array.from(set).sort()];
+  }, [activities]);
+
+  // Month navigation
+  const goPrevMonth = () => {
+    const d = new Date(year, monthIndex - 1, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    setCurrentMonth(`${y}-${m}`);
+    setSelectedDate("");
+  };
+
+  const goNextMonth = () => {
+    const d = new Date(year, monthIndex + 1, 1);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    setCurrentMonth(`${y}-${m}`);
+    setSelectedDate("");
+  };
+
+  const monthActivityCount = activities.length;
+
+  // Helper to get activity chip color
+  const getActivityColor = (type) => {
+    const t = type.toLowerCase();
+    if (t.includes("sow")) return "bg-green-100 text-green-800 border-green-300";
+    if (t.includes("irr")) return "bg-blue-100 text-blue-800 border-blue-300";
+    if (t.includes("pest")) return "bg-red-100 text-red-800 border-red-300";
+    if (t.includes("fert")) return "bg-orange-100 text-orange-800 border-orange-300";
+    return "bg-gray-100 text-gray-800 border-gray-300";
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top header */}
-      <div className="border-b bg-white">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-800">
-              FarmOps Dashboard
-            </h1>
-            <p className="text-sm text-gray-500">Green Farm</p>
+      {/* Top header - Dark blue/slate background */}
+      <div className="bg-slate-700 shadow-md">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl">🌾</span>
+            <div>
+              <h1 className="text-xl font-bold text-white">FarmOps Dashboard</h1>
+            </div>
           </div>
+
           <div className="flex items-center gap-4">
+            {/* Farm selector */}
+            <select className="bg-slate-600 text-white border border-slate-500 rounded-lg px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <option>🏡 Green Farm</option>
+              <option>Valley Farm</option>
+              <option>Hilltop Farm</option>
+            </select>
+
             {/* Month selector */}
-            <div className="flex items-center rounded-full border border-gray-300 px-3 py-1 bg-white shadow-sm text-sm">
-              <button className="px-2 text-gray-500 hover:text-gray-700">
+            <div className="flex items-center bg-slate-600 border border-slate-500 rounded-lg px-3 py-2 text-sm">
+              <button
+                onClick={goPrevMonth}
+                className="px-2 text-white hover:text-blue-300 font-bold"
+              >
                 ←
               </button>
-              <span className="px-2 font-medium text-gray-700">
-                {monthName}
-              </span>
-              <button className="px-2 text-gray-500 hover:text-gray-700">
+              <span className="px-3 font-medium text-white">📅 {monthName}</span>
+              <button
+                onClick={goNextMonth}
+                className="px-2 text-white hover:text-blue-300 font-bold"
+              >
                 →
               </button>
             </div>
+
             {/* Supervisor info */}
             <div className="flex items-center gap-3">
               <div className="text-right text-sm">
-                <div className="font-medium text-gray-700">
-                  Supervisor Rajesh
-                </div>
-                <div className="text-xs text-gray-500">This Month</div>
+                <div className="font-semibold text-white">Supervisor Rajesh</div>
+                <div className="text-xs text-slate-300">This Month</div>
               </div>
-              <div className="h-9 w-9 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-semibold shadow">
+              <div className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold shadow-md">
                 RS
               </div>
             </div>
@@ -354,149 +310,201 @@ export default function SupervisorDashboardPage() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
-        {/* Stats row */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <StatCard
+      <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        {/* Stats row with colored borders */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+          {/* <StatCard
             label="Today's Activities"
             value="23"
             subLabel="Activities logged"
-          />
+            color="green"
+          /> */}
+           <StatCard label="Month Activities" 
+             value={monthActivityCount}
+             subLabel="Total logged"
+             color="green" />
           <StatCard
             label="Workers Present"
-            value="14/18"
+            value="3/3"
             subLabel="Attendance today"
+            color="blue"
           />
-          <StatCard
-            label="Zones Need Attention"
-            value="3"
-            subLabel="Pest / Disease alerts"
-          />
+         <StatCard label="Zones" 
+            value={Math.max(0, zoneOptions.length - 1)} 
+            subLabel="Active zones"
+            color="red" />
           <StatCard
             label="Upcoming Tasks"
             value="7"
             subLabel="Next 7 days"
+            color="orange"
           />
         </div>
 
         {/* Filters row */}
-        <div className="flex flex-wrap gap-3 items-center justify-between">
-          <div className="flex flex-wrap gap-2">
-            <FilterPill
-              label={zoneFilter}
-              isActive
-              onClick={() => {}}
-            />
-            <FilterPill
-              label={activityFilter}
-              isActive
-              onClick={() => {}}
-            />
-            <FilterPill
-              label={workerFilter}
-              isActive
-              onClick={() => {}}
-            />
-          </div>
-          <div className="text-xs text-gray-500">
-            Filters are placeholders – real dropdowns can come later.
-          </div>
-        </div>
+       <div className="flex flex-wrap items-center gap-3">
+  {/* Zone */}
+  <select
+    value={zoneFilter}
+    onChange={(e) => setZoneFilter(e.target.value)}
+    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  >
+    {zoneOptions.map((z) => (
+      <option key={z} value={z} className="text-gray-800">
+        {z}
+      </option>
+    ))}
+  </select>
+
+  {/* Activity Type */}
+  <select
+    value={activityTypeFilter}
+    onChange={(e) => setActivityTypeFilter(e.target.value)}
+    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  >
+    <option value="All">All Activities</option>
+    {activityTypeFilters.slice(1).map((t) => (
+      <option key={t} value={t} className="text-gray-800">
+        {t}
+      </option>
+    ))}
+  </select>
+
+  {/* Workers */}
+  <select
+    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+  >
+    <option className="text-gray-800">All Workers</option>
+    <option className="text-gray-800">Ram</option>
+    <option className="text-gray-800">Sita</option>
+    <option className="text-gray-800">Raju</option>
+  </select>
+</div>
+
 
         {/* Calendar + Activity detail */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Calendar */}
-          <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="font-medium text-gray-800">
-                Monthly Activity Calendar
-              </div>
-              <div className="text-xs text-gray-500">
-                Tap a date to see details
-              </div>
+          <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-gray-200 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+  <button
+    onClick={goPrevMonth}
+    className="w-9 h-9 flex items-center justify-center 
+               border border-gray-400 
+               bg-white text-gray-800 
+               rounded-lg shadow-sm
+               hover:bg-gray-100 
+               transition"
+  >
+    <span className="text-lg font-bold">‹</span>
+  </button>
+
+  <div className="font-bold text-gray-800 text-lg">
+    {monthName}
+  </div>
+
+  <button
+    onClick={goNextMonth}
+    className="w-9 h-9 flex items-center justify-center 
+               border border-gray-400 
+               bg-white text-gray-800 
+               rounded-lg shadow-sm
+               hover:bg-gray-100 
+               transition"
+  >
+    <span className="text-lg font-bold">›</span>
+  </button>
+</div>
+
             </div>
 
-            <div className="grid grid-cols-7 text-xs font-medium text-gray-500 mb-2">
-              <div className="text-center">Mon</div>
-              <div className="text-center">Tue</div>
-              <div className="text-center">Wed</div>
-              <div className="text-center">Thu</div>
-              <div className="text-center">Fri</div>
-              <div className="text-center">Sat</div>
-              <div className="text-center">Sun</div>
-            </div>
+            {/* Calendar grid */}
+            <div className="border border-gray-300 rounded-lg overflow-hidden">
+              <div className="grid grid-cols-7 bg-slate-700 text-white text-xs font-semibold">
+                <div className="text-center py-3 border-r border-slate-600">Mon</div>
+                <div className="text-center py-3 border-r border-slate-600">Tue</div>
+                <div className="text-center py-3 border-r border-slate-600">Wed</div>
+                <div className="text-center py-3 border-r border-slate-600">Thu</div>
+                <div className="text-center py-3 border-r border-slate-600">Fri</div>
+                <div className="text-center py-3 border-r border-slate-600">Sat</div>
+                <div className="text-center py-3">Sun</div>
+              </div>
 
-            <div className="space-y-1">
-              {weeks.map((week, wi) => (
-                <div
-                  key={wi}
-                  className="grid grid-cols-7 gap-1"
-                >
-                  {week.map((cell, ci) => {
-                    if (!cell) {
+              <div>
+                {weeks.map((week, wi) => (
+                  <div key={wi} className="grid grid-cols-7 border-t border-gray-300">
+                    {week.map((cell, ci) => {
+                      if (!cell) {
+                        return (
+                          <div
+                            key={ci}
+                            className="h-24 bg-gray-50 border-r border-gray-200 last:border-r-0"
+                          />
+                        );
+                      }
+
+                      const isSelected = selectedDate === cell.date;
+                      const hasActivity = cell.labels.length > 0;
+
                       return (
-                        <div
+                        <button
                           key={ci}
-                          className="h-16 rounded-xl bg-transparent"
-                        />
-                      );
-                    }
-                    const isSelected =
-                      selectedDate === cell.date;
-                    const isToday = cell.day === 12; // static highlight
-                    return (
-                      <button
-                        key={ci}
-                        type="button"
-                        onClick={() =>
-                          setSelectedDate(cell.date || "")
-                        }
-                        className={`h-20 rounded-xl border text-left p-1.5 flex flex-col justify-between ${
-                          isSelected
-                            ? "border-green-600 bg-green-50"
-                            : "border-gray-200 bg-gray-50 hover:bg-gray-100"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span
-                            className={`text-xs font-semibold ${
-                              isSelected
-                                ? "text-green-700"
-                                : "text-gray-700"
-                            }`}
-                          >
+                          type="button"
+                          onClick={() => setSelectedDate(cell.date)}
+                          className={`h-24 text-left p-2 border-r border-gray-200 last:border-r-0 transition-colors ${
+                            isSelected
+                              ? "bg-blue-100 border-2 border-blue-500"
+                              : hasActivity
+                              ? "bg-white hover:bg-gray-50"
+                              : "bg-white hover:bg-gray-50"
+                          }`}
+                        >
+                          <div className="text-sm font-bold text-gray-800 mb-1">
                             {cell.day}
-                          </span>
-                          {isToday && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700">
-                              Today
-                            </span>
-                          )}
-                        </div>
-                        <div className="mt-1 text-[10px] text-gray-600 whitespace-pre-line leading-tight">
-                          {cell.label}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+                          </div>
+
+                          <div className="space-y-1">
+                            {cell.labels.map((label, idx) => (
+                              <div
+                                key={idx}
+                                className={`text-[9px] px-1.5 py-0.5 rounded border ${getActivityColor(
+                                  label.type
+                                )}`}
+                              >
+                                {label.zone}: {label.short}×{label.count}
+                              </div>
+                            ))}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Activity detail panel */}
-          <div className="bg-white rounded-2xl shadow-sm p-4 flex flex-col">
-            <div className="mb-2">
-              <div className="text-sm font-semibold text-gray-800">
-                Activities on 12 March 2025
-              </div>
-              <div className="text-xs text-gray-500">
-                Filter by type / worker / zone
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-5 flex flex-col">
+            <div className="mb-4 pb-3 border-b border-gray-200">
+              <div className="flex items-center gap-2 text-base font-bold text-gray-800">
+                <span className="text-red-500">📅</span>
+                {selectedDate
+                  ? `Activities on ${new Date(selectedDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      }
+                    )}`
+                  : "Select a date"}
               </div>
             </div>
 
             {/* Type filter pills */}
-            <div className="flex flex-wrap gap-1.5 mb-3">
+            <div className="flex flex-wrap gap-2 mb-4">
               {activityTypeFilters.map((label) => (
                 <FilterPill
                   key={label}
@@ -508,117 +516,116 @@ export default function SupervisorDashboardPage() {
             </div>
 
             {/* Activities list */}
-            <div className="space-y-3 overflow-y-auto max-h-80 pr-1">
-              {visibleActivities.length === 0 && (
-                <div className="text-xs text-gray-500">
-                  No activities match the selected filters.
+            <div className="space-y-3 overflow-y-auto max-h-96 pr-1">
+              {loading && (
+                <div className="text-sm text-gray-600 font-medium">
+                  Loading activities...
                 </div>
               )}
 
-              {visibleActivities.map((act) => (
-                <div
-                  key={act.id}
-                  className="border border-gray-200 rounded-xl p-3 bg-gray-50"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="text-xs font-semibold text-gray-800">
-                        {act.type}
-                      </div>
-                      <div className="text-[11px] text-gray-500">
-                        {act.zone} • {act.crop}
-                      </div>
-                    </div>
-                    <div className="text-[11px] text-gray-500">
-                      {act.time}
-                    </div>
-                  </div>
-                  <div className="mt-2 text-[11px] text-gray-700">
-                    <span className="font-medium">
-                      Inputs:
-                    </span>{" "}
-                    {act.inputs}
-                  </div>
-                  <div className="mt-1 text-[11px] text-gray-700">
-                    <span className="font-medium">
-                      Workers:
-                    </span>{" "}
-                    {act.workers.join(", ")}
-                  </div>
-                  <div className="mt-1 text-[11px] text-gray-500 italic">
-                    {act.remarks}
-                  </div>
+              {!loading && selectedDate && visibleActivities.length === 0 && (
+                <div className="text-sm text-gray-600">
+                  No activities for this date.
                 </div>
-              ))}
+              )}
+
+              {!loading &&
+                visibleActivities.map((act) => (
+                  <div
+                    key={act.id}
+                    className="border border-gray-200 rounded-lg p-4 bg-gray-50 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex-1">
+                        <div className="text-sm font-bold text-gray-800">
+                          {act.activity_type}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">
+                            {act.zone_name || "Unknown"}
+                          </span>
+                          {act.crop_name && (
+                            <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-800 font-medium">
+                              {act.crop_name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-xs text-gray-500 font-medium">
+                        10:30 AM
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 text-xs text-gray-700">
+                      <div>
+                        <span className="font-bold text-gray-800">Inputs:</span>{" "}
+                        {act.remarks || "Not specified"}
+                      </div>
+                      <div>
+                        <span className="font-bold text-gray-800">Workers:</span>{" "}
+                        Ram, Sita
+                      </div>
+                      <div>
+                        <span className="font-bold text-gray-800">Remarks:</span>{" "}
+                        <span className="italic">{act.remarks || "—"}</span>
+                      </div>
+                    </div>
+
+                    {/* Photo placeholders */}
+                    <div className="flex gap-2 mt-3">
+                      <div className="w-12 h-12 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400">
+                        📷
+                      </div>
+                      <div className="w-12 h-12 bg-gray-200 rounded border border-gray-300 flex items-center justify-center text-gray-400">
+                        📷
+                      </div>
+                    </div>
+                  </div>
+                ))}
             </div>
           </div>
+      
         </div>
 
-        {/* Charts row (placeholders for now) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Charts placeholders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <ChartCard title="Activity Type Distribution (This Month)">
-            <p className="text-xs text-gray-500 mb-1">
-              Example:
-              Sowing 10% | Irrigation 40% | Pest 20% | Fertilizer 15% | Others 15%
+            <p className="text-xs text-gray-600 mb-3">
+              Pie Chart: Sowing 10% | Irrigation 40% | Pest 20% | Fertilizer 15% | Others 15%
             </p>
-            <div className="mt-2 h-32 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-dashed border-green-200 flex items-center justify-center text-xs text-gray-500">
-              Pie chart placeholder – plug Recharts here
+            <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-500 bg-gray-50">
+              Pie chart placeholder – connect Recharts
             </div>
           </ChartCard>
 
           <ChartCard title="Zone-wise Activity Heat (This Month)">
-            <p className="text-xs text-gray-500 mb-1">
-              Example: Zone 1: 35 | Zone 2: 28 | Zone 3: 22
+            <p className="text-xs text-gray-600 mb-3">
+              Bar Chart: Zone 1: 35 | Zone 2: 28 | Zone 3: 22
             </p>
-            <div className="mt-2 h-32 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-dashed border-green-200 flex items-center justify-center text-xs text-gray-500">
+            <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-500 bg-gray-50">
               Bar chart placeholder
             </div>
           </ChartCard>
 
           <ChartCard title="Input Usage Trend (Weekly)">
-            <p className="text-xs text-gray-500 mb-1">
-              Water, Biofertilizer, Pesticide, Seeds by week
+            <p className="text-xs text-gray-600 mb-3">
+              Stacked Bar: Water, Biofertilizer, Pesticide, Seeds by week
             </p>
-            <div className="mt-2 h-32 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-dashed border-green-200 flex items-center justify-center text-xs text-gray-500">
+            <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-500 bg-gray-50">
               Stacked bar chart placeholder
             </div>
           </ChartCard>
 
           <ChartCard title="Worker Attendance Summary">
-            <p className="text-xs text-gray-500 mb-1">
-              Worker vs days present this month
+            <p className="text-xs text-gray-600 mb-3">
+              Bar Chart: Worker vs Days Present this month
             </p>
-            <div className="mt-2 h-32 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-dashed border-green-200 flex items-center justify-center text-xs text-gray-500">
-              Bar chart placeholder
+            <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-sm text-gray-500 bg-gray-50">
+              Attendance chart placeholder
             </div>
           </ChartCard>
         </div>
       </div>
-    </div>
-  );
-}
-
-function StatCard({ label, value, subLabel }) {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm p-4 flex flex-col justify-between">
-      <div className="text-xs text-gray-500">{label}</div>
-      <div className="mt-1 text-2xl font-semibold text-gray-800">
-        {value}
-      </div>
-      <div className="mt-1 text-[11px] text-gray-500">
-        {subLabel}
-      </div>
-    </div>
-  );
-}
-
-function ChartCard({ title, children }) {
-  return (
-    <div className="bg-white rounded-2xl shadow-sm p-4">
-      <div className="text-sm font-semibold text-gray-800">
-        {title}
-      </div>
-      <div className="mt-2">{children}</div>
     </div>
   );
 }
