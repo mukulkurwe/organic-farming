@@ -148,7 +148,7 @@ export default function NewActivityPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-green-50 to-green-100 flex justify-center py-8">
+    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-green-200 to-green-300 flex justify-center py-8">
       <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8">
         <h1 className="text-2xl font-bold text-gray-800 text-center">
           Add Field Activity

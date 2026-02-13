@@ -433,14 +433,18 @@ export default function SupervisorDashboardPage() {
 
               <div>
                 {weeks.map((week, wi) => (
-                  <div key={wi} className="grid grid-cols-7 border-t border-gray-300">
+                  <div key={wi} className="grid grid-cols-7 border-t border-gray-300 bg-white ">
                     {week.map((cell, ci) => {
                       if (!cell) {
                         return (
+                          // <div
+                          //   key={ci}
+                          //   className="h-24 bg-gray-50 border-r border-gray-200 last:border-r-0 hover:border-green-400"
+                          // />
                           <div
-                            key={ci}
-                            className="h-24 bg-gray-50 border-r border-gray-200 last:border-r-0"
-                          />
+                             key={ci}
+                             className="h-24 bg-gray-50 border border-gray-200 hover:border-green-500 hover:bg-green-50 hover:shadow-md transition-all duration-200 cursor-pointer"
+                                 />
                         );
                       }
 
@@ -452,13 +456,19 @@ export default function SupervisorDashboardPage() {
                           key={ci}
                           type="button"
                           onClick={() => setSelectedDate(cell.date)}
-                          className={`h-24 text-left p-2 border-r border-gray-200 last:border-r-0 transition-colors ${
-                            isSelected
-                              ? "bg-blue-100 border-2 border-blue-500"
-                              : hasActivity
-                              ? "bg-white hover:bg-gray-50"
-                              : "bg-white hover:bg-gray-50"
-                          }`}
+                          // className={`h-24 text-left p-2 border-r border-gray-200 last:border-r-0 transition-colors ${
+                          //   isSelected
+                          //     ? "bg-blue-100 border-2 border-blue-500"
+                          //     : hasActivity
+                          //     ? "bg-white hover:bg-gray-50"
+                          //     : "bg-white hover:border-green-500  hover:shadow-md transition-all duration-200 cursor-pointer"
+                          // }`}
+                          className={`h-24 text-left p-2 rounded-lg border-2 transition-all duration-200 ${
+                                    isSelected
+                                    ? "bg-green-50 border-green-500 shadow"
+                                 : "bg-white border-gray-300 hover:border-green-500 hover:shadow hover:-translate-y-0.5 cursor-pointer"
+                                     }`}
+
                         >
                           <div className="text-sm font-bold text-gray-800 mb-1">
                             {cell.day}
