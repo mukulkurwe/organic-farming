@@ -227,28 +227,10 @@ app.use("/api", masterRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 
-app.get("/api/db-test", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT NOW() AS now");
-    return res.json({ ok: true, now: result.rows[0].now });
-  } catch (err) {
-  console.error("DB TEST ERROR:", err);
-  return res.status(500).json({
-    ok: false,
-    error: err?.message || String(err),
-    code: err?.code || null,
-  });
-}
-
-});
-
-
 /* ========================
    HEALTH CHECK
 ======================== */
-app.get("/", (req, res) => {
-  res.send("Backend is running ✅");
-});
+
 app.get("/api/health", async (_req, res) => {
   try {
     const result = await pool.query("SELECT NOW() as now");
