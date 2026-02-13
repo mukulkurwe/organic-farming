@@ -232,13 +232,14 @@ app.get("/api/db-test", async (req, res) => {
     const result = await pool.query("SELECT NOW() AS now");
     return res.json({ ok: true, now: result.rows[0].now });
   } catch (err) {
-    console.error("DB TEST ERROR:", err);
-    return res.status(500).json({
-      ok: false,
-      error: err?.message || String(err),
-      code: err?.code || null,
-    });
-  }
+  console.error("DB TEST ERROR:", err);
+  return res.status(500).json({
+    ok: false,
+    error: err?.message || String(err),
+    code: err?.code || null,
+  });
+}
+
 });
 
 

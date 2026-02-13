@@ -15,16 +15,13 @@
 import pg from "pg";
 const { Pool } = pg;
 
-const isProd = process.env.NODE_ENV === "production";
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProd
-    ? { rejectUnauthorized: false } // Render managed PG (SSL required)
-    : false,
+  ssl: false, // Internal Render Postgres URL works without SSL
 });
 
 export default pool;
+
 
 
 // CREATE TABLE plots (
