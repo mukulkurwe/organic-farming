@@ -84,7 +84,7 @@ router.get("/activities/month", async (req, res) => {
       `
       SELECT
         a.id,
-        a.date,
+        to_char(a.date, 'YYYY-MM-DD') AS date,
         a.created_at,
         a.activity_type,
         a.remarks,

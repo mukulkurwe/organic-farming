@@ -10,11 +10,10 @@ function FilterPill({ label, isActive, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-        isActive
+      className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${isActive
           ? "bg-blue-500 text-white shadow-md"
           : "bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-300"
-      }`}
+        }`}
     >
       {label}
     </button>
@@ -124,16 +123,16 @@ export default function SupervisorDashboardPage() {
           type === "sowing"
             ? "Sow"
             : type === "irrigation"
-            ? "Irr"
-            : type === "pest_spray"
-            ? "Pest"
-            : type === "biofertilizer"
-            ? "Bio"
-            : type === "weeding"
-            ? "Weed"
-            : type === "harvest"
-            ? "Hrv"
-            : "Act";
+              ? "Irr"
+              : type === "pest_spray"
+                ? "Pest"
+                : type === "biofertilizer"
+                  ? "Bio"
+                  : type === "weeding"
+                    ? "Weed"
+                    : type === "harvest"
+                      ? "Hrv"
+                      : "Act";
 
         const key = `${zone}-${short}`;
         if (!summary[key]) summary[key] = { zone, short, count: 0, type };
@@ -319,18 +318,18 @@ export default function SupervisorDashboardPage() {
             subLabel="Activities logged"
             color="green"
           /> */}
-           <StatCard label="Month Activities" 
-             value={monthActivityCount}
-             subLabel="Total logged"
-             color="green" />
+          <StatCard label="Month Activities"
+            value={monthActivityCount}
+            subLabel="Total logged"
+            color="green" />
           <StatCard
             label="Workers Present"
             value="3/3"
             subLabel="Attendance today"
             color="blue"
           />
-         <StatCard label="Zones" 
-            value={Math.max(0, zoneOptions.length - 1)} 
+          <StatCard label="Zones"
+            value={Math.max(0, zoneOptions.length - 1)}
             subLabel="Active zones"
             color="red" />
           <StatCard
@@ -342,44 +341,44 @@ export default function SupervisorDashboardPage() {
         </div>
 
         {/* Filters row */}
-       <div className="flex flex-wrap items-center gap-3">
-  {/* Zone */}
-  <select
-    value={zoneFilter}
-    onChange={(e) => setZoneFilter(e.target.value)}
-    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  >
-    {zoneOptions.map((z) => (
-      <option key={z} value={z} className="text-gray-800">
-        {z}
-      </option>
-    ))}
-  </select>
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Zone */}
+          <select
+            value={zoneFilter}
+            onChange={(e) => setZoneFilter(e.target.value)}
+            className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            {zoneOptions.map((z) => (
+              <option key={z} value={z} className="text-gray-800">
+                {z}
+              </option>
+            ))}
+          </select>
 
-  {/* Activity Type */}
-  <select
-    value={activityTypeFilter}
-    onChange={(e) => setActivityTypeFilter(e.target.value)}
-    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  >
-    <option value="All">All Activities</option>
-    {activityTypeFilters.slice(1).map((t) => (
-      <option key={t} value={t} className="text-gray-800">
-        {t}
-      </option>
-    ))}
-  </select>
+          {/* Activity Type */}
+          <select
+            value={activityTypeFilter}
+            onChange={(e) => setActivityTypeFilter(e.target.value)}
+            className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="All">All Activities</option>
+            {activityTypeFilters.slice(1).map((t) => (
+              <option key={t} value={t} className="text-gray-800">
+                {t}
+              </option>
+            ))}
+          </select>
 
-  {/* Workers */}
-  <select
-    className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-  >
-    <option className="text-gray-800">All Workers</option>
-    <option className="text-gray-800">Ram</option>
-    <option className="text-gray-800">Sita</option>
-    <option className="text-gray-800">Raju</option>
-  </select>
-</div>
+          {/* Workers */}
+          <select
+            className="border border-gray-400 bg-white text-gray-800 rounded-lg px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option className="text-gray-800">All Workers</option>
+            <option className="text-gray-800">Ram</option>
+            <option className="text-gray-800">Sita</option>
+            <option className="text-gray-800">Raju</option>
+          </select>
+        </div>
 
 
         {/* Calendar + Activity detail */}
@@ -388,34 +387,34 @@ export default function SupervisorDashboardPage() {
           <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-  <button
-    onClick={goPrevMonth}
-    className="w-9 h-9 flex items-center justify-center 
+                <button
+                  onClick={goPrevMonth}
+                  className="w-9 h-9 flex items-center justify-center 
                border border-gray-400 
                bg-white text-gray-800 
                rounded-lg shadow-sm
                hover:bg-gray-100 
                transition"
-  >
-    <span className="text-lg font-bold">‹</span>
-  </button>
+                >
+                  <span className="text-lg font-bold">‹</span>
+                </button>
 
-  <div className="font-bold text-gray-800 text-lg">
-    {monthName}
-  </div>
+                <div className="font-bold text-gray-800 text-lg">
+                  {monthName}
+                </div>
 
-  <button
-    onClick={goNextMonth}
-    className="w-9 h-9 flex items-center justify-center 
+                <button
+                  onClick={goNextMonth}
+                  className="w-9 h-9 flex items-center justify-center 
                border border-gray-400 
                bg-white text-gray-800 
                rounded-lg shadow-sm
                hover:bg-gray-100 
                transition"
-  >
-    <span className="text-lg font-bold">›</span>
-  </button>
-</div>
+                >
+                  <span className="text-lg font-bold">›</span>
+                </button>
+              </div>
 
             </div>
 
@@ -442,9 +441,9 @@ export default function SupervisorDashboardPage() {
                           //   className="h-24 bg-gray-50 border-r border-gray-200 last:border-r-0 hover:border-green-400"
                           // />
                           <div
-                             key={ci}
-                             className="h-24 bg-gray-50 border border-gray-200 hover:border-green-500 hover:bg-green-50 hover:shadow-md transition-all duration-200 cursor-pointer"
-                                 />
+                            key={ci}
+                            className="h-24 bg-gray-50 border border-gray-200 hover:border-green-500 hover:bg-green-50 hover:shadow-md transition-all duration-200 cursor-pointer"
+                          />
                         );
                       }
 
@@ -463,11 +462,10 @@ export default function SupervisorDashboardPage() {
                           //     ? "bg-white hover:bg-gray-50"
                           //     : "bg-white hover:border-green-500  hover:shadow-md transition-all duration-200 cursor-pointer"
                           // }`}
-                          className={`h-24 text-left p-2 rounded-lg border-2 transition-all duration-200 ${
-                                    isSelected
-                                    ? "bg-green-50 border-green-500 shadow"
-                                 : "bg-white border-gray-300 hover:border-green-500 hover:shadow hover:-translate-y-0.5 cursor-pointer"
-                                     }`}
+                          className={`h-24 text-left p-2 rounded-lg border-2 transition-all duration-200 ${isSelected
+                              ? "bg-green-50 border-green-500 shadow"
+                              : "bg-white border-gray-300 hover:border-green-500 hover:shadow hover:-translate-y-0.5 cursor-pointer"
+                            }`}
 
                         >
                           <div className="text-sm font-bold text-gray-800 mb-1">
@@ -502,13 +500,13 @@ export default function SupervisorDashboardPage() {
                 <span className="text-red-500">📅</span>
                 {selectedDate
                   ? `Activities on ${new Date(selectedDate).toLocaleDateString(
-                      "en-US",
-                      {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      }
-                    )}`
+                    "en-US",
+                    {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    }
+                  )}`
                   : "Select a date"}
               </div>
             </div>
@@ -562,36 +560,24 @@ export default function SupervisorDashboardPage() {
                         </div>
                       </div>
                       <div className="text-xs text-gray-500 font-medium">
-                        10:30 AM
+                        {act.created_at
+                          ? new Date(act.created_at).toLocaleTimeString("en-IN", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                          : ""}
                       </div>
                     </div>
 
                     <div className="space-y-2 text-xs text-gray-700">
                       <div>
-                       <span className="font-bold text-gray-800">Inputs:</span>{" "}
-                          {act.inputs && act.inputs.length > 0
-                            ? act.inputs
-                             .map((inp) => {
-                           const qty = inp.quantity ? ` ${inp.quantity}${inp.unit || ""}` : "";
-                              const method = inp.method ? ` (${inp.method})` : "";
-                             return `${inp.name}${qty}${method}`;
-                              })
-                              .join(", ")
-                          : "Not specified"}
-
+                        <span className="font-bold text-gray-800">Inputs:</span>{" "}
+                        {act.inputs || "Not specified"}
                       </div>
                       <div>
-                       <div className="text-xs text-gray-500 font-medium">
-                              {act.created_at
-                              ? new Date(act.created_at).toLocaleTimeString("en-IN", {
-                                   hour: "2-digit",
-                                      minute: "2-digit",
-                                 hour12: true,
-                                     })
-                                         : ""}
-                                  </div>
-
-
+                        <span className="font-bold text-gray-800">Workers:</span>{" "}
+                        Ram, Sita
                       </div>
                       <div>
                         <span className="font-bold text-gray-800">Remarks:</span>{" "}
@@ -612,7 +598,7 @@ export default function SupervisorDashboardPage() {
                 ))}
             </div>
           </div>
-      
+
         </div>
 
         {/* Charts placeholders */}
