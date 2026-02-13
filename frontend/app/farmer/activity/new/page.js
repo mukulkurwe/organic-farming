@@ -254,7 +254,7 @@ export default function NewActivityPage() {
                       className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
                         activityType === type
                           ? "bg-green-50 border-green-500"
-                          : "bg-white border-gray-300 hover:border-gray-400"
+                          : "bg-white border-gray-300 hover:border-green-500"
                       }`}
                     >
                       <span className="text-3xl mb-2">
