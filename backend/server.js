@@ -230,7 +230,9 @@ app.use("/api/supervisor", supervisorRoutes);
 /* ========================
    HEALTH CHECK
 ======================== */
-
+app.get("/", (req, res) => {
+  res.send("Backend is running ✅");
+});
 app.get("/api/health", async (_req, res) => {
   try {
     const result = await pool.query("SELECT NOW() as now");
