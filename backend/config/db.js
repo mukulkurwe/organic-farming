@@ -1,12 +1,27 @@
-import pkg from "pg";
-import dotenv from "dotenv";
+// import pkg from "pg";
+// import dotenv from "dotenv";
 
-dotenv.config();
+// dotenv.config();
 
-const { Pool } = pkg;
+// const { Pool } = pkg;
+
+// const pool = new Pool({
+//   connectionString: process.env.DATABASE_URL,
+// });
+
+// export default pool;
+
+
+import pg from "pg";
+const { Pool } = pg;
+
+const isProd = process.env.NODE_ENV === "production";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: isProd
+    ? { rejectUnauthorized: false } // Render managed PG (SSL required)
+    : false,
 });
 
 export default pool;

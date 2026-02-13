@@ -2,7 +2,7 @@
 import fs from "fs";
 import path from "path";
 import url from "url";
-import pool from "./config/db.js";
+import pool from "../config/db.js";
 
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +21,8 @@ async function runMigrations() {
     `);
 
     // 2) migrations folder .sql files
-    const migrationsDir = path.join(__dirname, "migrations");
+    const migrationsDir = path.join(__dirname, "../migrations");
+
     let files = fs
       .readdirSync(migrationsDir)
       .filter((f) => f.endsWith(".sql"))

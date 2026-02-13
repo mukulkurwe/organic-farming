@@ -94,25 +94,3 @@ CREATE TABLE IF NOT EXISTS plots (
    slope_percent NUMERIC,
    risk_level VARCHAR(10)
 );
- 
---landmapping
-CREATE TABLE IF NOT EXISTS landmapping (
-        id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-        name VARCHAR(100) NOT NULL,
-        location VARCHAR(150),
-        total_area NUMERIC,
-        boundary JSONB,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
-CREATE TYPE activity_type_enum AS ENUM (
-  'sowing',
-  'transplanting',
-  'irrigation',
-  'pest_spray',
-  'biofertilizer',
-  'weeding',
-  'harvest',
-  'other'
-);      

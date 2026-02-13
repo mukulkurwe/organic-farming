@@ -227,6 +227,16 @@ app.use("/api", masterRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({ ok: true, time: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 /* ========================
    HEALTH CHECK
 ======================== */
