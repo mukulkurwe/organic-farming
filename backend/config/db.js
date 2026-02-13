@@ -1,26 +1,15 @@
-// import pkg from "pg";
-// import dotenv from "dotenv";
+import pkg from "pg";
+import dotenv from "dotenv";
 
-// dotenv.config();
+dotenv.config();
 
-// const { Pool } = pkg;
-
-// const pool = new Pool({
-//   connectionString: process.env.DATABASE_URL,
-// });
-
-// export default pool;
-
-
-import pg from "pg";
-const { Pool } = pg;
+const { Pool } = pkg;
 
 const pool = new Pool({
-  LconnectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },});
+  connectionString: process.env.DATABASE_URL,
+});
 
 export default pool;
-
 
 
 // CREATE TABLE plots (
