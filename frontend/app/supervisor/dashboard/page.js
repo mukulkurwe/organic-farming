@@ -568,12 +568,30 @@ export default function SupervisorDashboardPage() {
 
                     <div className="space-y-2 text-xs text-gray-700">
                       <div>
-                        <span className="font-bold text-gray-800">Inputs:</span>{" "}
-                        {act.remarks || "Not specified"}
+                       <span className="font-bold text-gray-800">Inputs:</span>{" "}
+                          {act.inputs && act.inputs.length > 0
+                            ? act.inputs
+                             .map((inp) => {
+                           const qty = inp.quantity ? ` ${inp.quantity}${inp.unit || ""}` : "";
+                              const method = inp.method ? ` (${inp.method})` : "";
+                             return `${inp.name}${qty}${method}`;
+                              })
+                              .join(", ")
+                          : "Not specified"}
+
                       </div>
                       <div>
-                        <span className="font-bold text-gray-800">Workers:</span>{" "}
-                        Ram, Sita
+                       <div className="text-xs text-gray-500 font-medium">
+                              {act.created_at
+                              ? new Date(act.created_at).toLocaleTimeString("en-IN", {
+                                   hour: "2-digit",
+                                      minute: "2-digit",
+                                 hour12: true,
+                                     })
+                                         : ""}
+                                  </div>
+
+
                       </div>
                       <div>
                         <span className="font-bold text-gray-800">Remarks:</span>{" "}
