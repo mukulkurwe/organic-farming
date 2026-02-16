@@ -35,7 +35,7 @@
 // }
 
 // frontend/lib/api.js
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = "http://localhost:5000/api";
 
 // shared helper so we don't duplicate logic
 async function handleError(res, path, method) {
