@@ -76,6 +76,15 @@ app.get("/api/test-farms", async (req, res) => {
 
 });
 
+app.get("/api/env-check", (_req, res) => {
+  const url = process.env.DATABASE_URL || "";
+  const masked = url.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:****@"); // hide password
+  res.json({
+    hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
+    databaseUrlMasked: masked,
+    nodeEnv: process.env.NODE_ENV,
+  });
+});
 
 
 
