@@ -13,6 +13,7 @@ import plotsRouter from "./routes/plots.js";
 import masterRoutes from "./routes/masterRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import supervisorRoutes from "./routes/supervisorRoutes.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
    ROUTES
 ======================== */
 
+app.use("/api/auth", authRoutes);
 app.use("/api", farmRoutes);
 app.use("/api", plotsRouter);
 app.use("/api", masterRoutes);
