@@ -33,11 +33,16 @@ app.use("/api/supervisor", supervisorRoutes);
 
 
 // ✅ root route
-app.get("/", (req, res) => {
-  res.status(200).json({
-    ok: true,
-    message: "Backend is running 🚀",
-  });
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM activities ORDER BY id DESC LIMIT 50"
+    );
+    res.json({ ok: true, rows: result.rows });
+  } catch (err) {
+    console.error("❌ activities error:", err);
+    res.status(500).json({ ok: false, message: err.message, code: err.code });
+  }
 });
 /* ========================
    HEALTH CHECK
