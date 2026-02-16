@@ -33,7 +33,7 @@ app.use("/api/supervisor", supervisorRoutes);
 
 
 // ✅ root route
-router.get("/", async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM activities ORDER BY id DESC LIMIT 50"
