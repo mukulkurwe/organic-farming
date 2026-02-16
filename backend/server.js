@@ -52,20 +52,16 @@ app.get("/api/health", async (_req, res) => {
   }
 });
 
-app.get("/api/check-tables", async (req, res) => {
+app.get("/api/test-farms", async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-    `);
-
+    const result = await pool.query("SELECT * FROM public.farms ORDER BY id ASC");
     res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 /* ========================
