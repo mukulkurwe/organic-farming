@@ -49,11 +49,9 @@ router.get("/farms", async (req, res) => {
     );
     res.json(result.rows);
   } catch (err) {
-    console.error("GET /farms error:", err.message);
-    res.status(500).json({
-      message: "Failed to fetch farms",
-    });
-  }
+  console.error("❌ /api/farms error:", err);
+  return res.status(500).json({ message: "Failed to fetch farms", error: err.message });
+}
 });
 
 /* ==========================================
