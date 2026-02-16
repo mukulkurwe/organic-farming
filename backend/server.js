@@ -52,15 +52,21 @@ app.get("/api/health", async (_req, res) => {
   }
 });
 
-app.get("/api/db-test", async (req, res) => {
+app.get("/api/check-tables", async (req, res) => {
   try {
-    const result = await pool.query("SELECT NOW() as now");
-    res.json({ ok: true, now: result.rows[0].now });
+    const result = await pool.query(`
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public'
+    `);
+
+    res.json(result.rows);
   } catch (err) {
-    console.error("❌ db-test error:", err);
-    res.status(500).json({ ok: false, error: err.message });
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
+
 
 /* ========================
    SERVER START
