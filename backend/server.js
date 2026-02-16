@@ -55,12 +55,21 @@ app.get("/api/health", async (_req, res) => {
 app.get("/api/test-farms", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM public.farms ORDER BY id ASC");
-    res.json(result.rows);
+    res.json({ ok: true, rows: result.rows });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error("FULL ERROR OBJECT:", err);
+
+    res.status(500).json({
+      ok: false,
+      message: err?.message || "No message",
+      code: err?.code || "No code",
+      detail: err?.detail || "No detail",
+      stack: err?.stack || "No stack"
+    });
   }
 });
+
+
 
 
 
