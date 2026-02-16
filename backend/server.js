@@ -57,16 +57,18 @@ app.get("/api/test-farms", async (req, res) => {
     const result = await pool.query("SELECT * FROM public.farms ORDER BY id ASC");
     res.json({ ok: true, rows: result.rows });
   } catch (err) {
-    console.error("FULL ERROR OBJECT:", err);
+  console.error("❌ ERROR:", err);
 
-    res.status(500).json({
-      ok: false,
-      message: err?.message || "No message",
-      code: err?.code || "No code",
-      detail: err?.detail || "No detail",
-      stack: err?.stack || "No stack"
-    });
-  }
+  return res.status(500).json({
+    ok: false,
+    message: err?.message ?? null,
+    code: err?.code ?? null,
+    detail: err?.detail ?? null,
+    hint: err?.hint ?? null,
+    where: err?.where ?? null,
+  });
+}
+
 });
 
 
