@@ -52,6 +52,16 @@ app.get("/api/health", async (_req, res) => {
   }
 });
 
+app.get("/api/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW() as now");
+    res.json({ ok: true, now: result.rows[0].now });
+  } catch (err) {
+    console.error("❌ db-test error:", err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 /* ========================
    SERVER START
 ======================== */
