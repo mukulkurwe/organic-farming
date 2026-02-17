@@ -1,33 +1,73 @@
-// import app from "./app.js";
 
-// const PORT = process.env.PORT || 5000;
 
-// app.listen(PORT, () => {
-//   console.log(`🚀 Server running on port ${PORT}`);
-// });
 
+// backend/server.js
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import farmRoutes from "./routes/farmRoutes.js";
 
+import pool from "./config/db.js";
+
+import farmRoutes from "./routes/farmRoutes.js";
 import plotsRouter from "./routes/plots.js";
+import masterRoutes from "./routes/masterRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
+import supervisorRoutes from "./routes/supervisorRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000" }));
+// app.use(cors({ origin: "http://localhost:3000" }));
+// for production + local
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.FRONTEND_URL, // set this on Render
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
+
+/* ========================
+   ROUTES
+======================== */
 
 app.use("/api", farmRoutes);
 app.use("/api", plotsRouter);
+app.use("/api", masterRoutes);
+app.use("/api/activities", activityRoutes);
+app.use("/api/supervisor", supervisorRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log(`🚀 Server running on port ${process.env.PORT}`);
+
+
+/* ========================
+   HEALTH CHECK
+======================== */
+
+app.get("/api/health", async (_req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW() as now");
+    res.json({ ok: true, now: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
+/* ========================
+   SERVER START
+======================== */
 
-// create table in db using
-// psql postgresql://postgres:mukul123@localhost:5432/iit
-// DELETE FROM public.landmapping;
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
