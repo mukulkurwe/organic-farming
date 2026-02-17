@@ -32,18 +32,7 @@ app.use("/api/activities", activityRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 
 
-// ✅ root route
-app.get("/", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT * FROM activities ORDER BY id DESC LIMIT 50"
-    );
-    res.json({ ok: true, rows: result.rows });
-  } catch (err) {
-    console.error("❌ activities error:", err);
-    res.status(500).json({ ok: false, message: err.message, code: err.code });
-  }
-});
+
 /* ========================
    HEALTH CHECK
 ======================== */
@@ -56,38 +45,6 @@ app.get("/api/health", async (_req, res) => {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
-
-app.get("/api/test-farms", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM public.farms ORDER BY id ASC");
-    res.json({ ok: true, rows: result.rows });
-  } catch (err) {
-  console.error("❌ ERROR:", err);
-
-  return res.status(500).json({
-    ok: false,
-    message: err?.message ?? null,
-    code: err?.code ?? null,
-    detail: err?.detail ?? null,
-    hint: err?.hint ?? null,
-    where: err?.where ?? null,
-  });
-}
-
-});
-
-app.get("/api/env-check", (_req, res) => {
-  const url = process.env.DATABASE_URL || "";
-  const masked = url.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:****@"); // hide password
-  res.json({
-    hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
-    databaseUrlMasked: masked,
-    nodeEnv: process.env.NODE_ENV,
-  });
-});
-
-
-
 
 /* ========================
    SERVER START

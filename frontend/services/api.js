@@ -1,8 +1,16 @@
 // frontend/src/services/api.js
 import axios from "axios";
 
+
+// for local host
+// const api = axios.create({
+//   baseURL: "http://localhost:4000/api",
+// });
+
+
+// for Production
 const api = axios.create({
-  baseURL: "http://localhost:4000/api",
+  baseURL: "https://organic-farming-7lw1.onrender.com/api",
 });
 
 export default api;
