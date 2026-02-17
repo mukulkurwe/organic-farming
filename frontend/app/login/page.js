@@ -124,7 +124,7 @@ export default function LoginPage() {
               maxLength={10}
               required
               autoComplete="tel"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
           </div>
 
@@ -141,7 +141,7 @@ export default function LoginPage() {
               onChange={handleChange}
               required
               autoComplete="current-password"
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
           </div>
 

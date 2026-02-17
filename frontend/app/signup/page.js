@@ -130,7 +130,7 @@ export default function SignupPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
           </div>
 
@@ -147,7 +147,7 @@ export default function SignupPage() {
               onChange={handleChange}
               maxLength={10}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
             <p className="text-xs text-gray-500 mt-1">10 digit mobile number</p>
           </div>
@@ -161,7 +161,7 @@ export default function SignupPage() {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             >
               <option value="farmer">Farmer</option>
               <option value="admin">Admin</option>
@@ -181,7 +181,7 @@ export default function SignupPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
             <p className="text-xs text-gray-500 mt-1">
               At least 6 characters
@@ -200,7 +200,7 @@ export default function SignupPage() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
           </div>
 
