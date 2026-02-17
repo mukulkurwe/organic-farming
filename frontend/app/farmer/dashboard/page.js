@@ -144,6 +144,19 @@ export default function FarmerDashboard() {
               Analyze your farm performance
             </p>
           </button>
+
+          <button
+            onClick={() => router.push("/farmer/calendar")}
+            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
+          >
+            <div className="text-3xl mb-2">📅</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-2">
+              Agri Calendar
+            </h3>
+            <p className="text-sm text-gray-600">
+              Crop calendar and task advisory
+            </p>
+          </button>
         </div>
 
         {/* Features Grid */}
@@ -153,9 +166,7 @@ export default function FarmerDashboard() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Land Mapping
-              </h3>
+              <h3 className="font-semibold text-gray-800 mb-2">Land Mapping</h3>
               <p className="text-sm text-gray-600">
                 Draw and manage farm boundaries
               </p>
@@ -180,9 +191,7 @@ export default function FarmerDashboard() {
               <h3 className="font-semibold text-gray-800 mb-2">
                 Activity Tracking
               </h3>
-              <p className="text-sm text-gray-600">
-                Log daily farm activities
-              </p>
+              <p className="text-sm text-gray-600">Log daily farm activities</p>
             </div>
             <div className="border border-gray-200 rounded-lg p-4">
               <h3 className="font-semibold text-gray-800 mb-2">
@@ -196,9 +205,7 @@ export default function FarmerDashboard() {
               <h3 className="font-semibold text-gray-800 mb-2">
                 Reports & Analytics
               </h3>
-              <p className="text-sm text-gray-600">
-                View insights and trends
-              </p>
+              <p className="text-sm text-gray-600">View insights and trends</p>
             </div>
           </div>
         </div>
