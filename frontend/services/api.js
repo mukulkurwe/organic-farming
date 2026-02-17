@@ -10,7 +10,8 @@ import axios from "axios";
 
 // for Production
 const api = axios.create({
-  baseURL: "https://organic-farming-7lw1.onrender.com/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 30000, // helps with Render cold start
 });
 
 export default api;
