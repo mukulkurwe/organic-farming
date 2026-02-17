@@ -17,8 +17,19 @@ import supervisorRoutes from "./routes/supervisorRoutes.js";
 dotenv.config();
 
 const app = express();
+// for local host
+// app.use(cors({ origin: "http://localhost:3000" }));
 
-app.use(cors({ origin: "http://localhost:3000" }));
+// for production
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://organic-farming-teal.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+app.options("*", cors());
 app.use(express.json());
 
 /* ========================
