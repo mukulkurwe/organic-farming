@@ -20,21 +20,16 @@ const app = express();
 
 // app.use(cors({ origin: "http://localhost:3000" }));
 // for production + local
-const allowedOrigins = [
-  "http://localhost:3000",
-  process.env.FRONTEND_URL, // set this on Render
-].filter(Boolean);
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://organic-farming-teal.vercel.app",
+  ],
+  credentials: true,
+}));
 
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error(`CORS blocked for origin: ${origin}`));
-    },
-    credentials: true,
-  })
-);
+app.options("*", cors());
+
 app.use(express.json());
 
 /* ========================
