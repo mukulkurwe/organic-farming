@@ -20,7 +20,7 @@ const AgriCalendar = dynamic(
   },
 );
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
 
 export default function FarmerCalendarPage() {
   const router = useRouter();
@@ -49,18 +49,29 @@ export default function FarmerCalendarPage() {
     loadFarmer();
   }, []);
 
-  // Load calendar events for current month
+  // Load calendar events + logged activities for current month
   const loadEvents = useCallback(
     async (monthOverride) => {
       if (!farmer) return;
       const month = monthOverride || currentMonth;
       try {
-        const res = await fetch(
-          `${API_BASE}/calendar/events?farmer_id=${farmer.id}&month=${month}`,
-        );
-        if (!res.ok) throw new Error("Failed to load events");
-        const data = await res.json();
-        setEvents(data);
+        // Fetch calendar plan events and logged activities in parallel
+        const [calRes, actRes] = await Promise.allSettled([
+          fetch(`${API_BASE}/calendar/events?farmer_id=${farmer.id}&month=${month}`),
+          fetch(`${API_BASE}/activities/as-events?month=${month}`),
+        ]);
+
+        let calendarEvents = [];
+        if (calRes.status === "fulfilled" && calRes.value.ok) {
+          calendarEvents = await calRes.value.json();
+        }
+
+        let activityEvents = [];
+        if (actRes.status === "fulfilled" && actRes.value.ok) {
+          activityEvents = await actRes.value.json();
+        }
+
+        setEvents([...calendarEvents, ...activityEvents]);
       } catch (err) {
         console.error("Load events error:", err);
       } finally {
@@ -70,30 +81,34 @@ export default function FarmerCalendarPage() {
     [farmer, currentMonth],
   );
 
-  // On first farmer load, find the earliest event month and jump there
+  // On first farmer load, load events for current month (and try calendar events too)
   useEffect(() => {
     if (!farmer) return;
 
-    async function jumpToFirstEvent() {
+    async function loadInitialEvents() {
       try {
+        // Try calendar events first
         const res = await fetch(
           `${API_BASE}/calendar/events?farmer_id=${farmer.id}`,
         );
-        if (!res.ok) throw new Error("Failed");
-        const allEvents = await res.json();
-        if (allEvents.length > 0) {
-          const firstDate = new Date(allEvents[0].event_date);
-          const firstMonth = format(firstDate, "yyyy-MM");
-          setCurrentMonth(firstMonth);
-          loadEvents(firstMonth);
-        } else {
-          setLoading(false);
+        if (res.ok) {
+          const allEvents = await res.json();
+          if (allEvents.length > 0) {
+            const firstDate = new Date(allEvents[0].event_date);
+            const firstMonth = format(firstDate, "yyyy-MM");
+            setCurrentMonth(firstMonth);
+            loadEvents(firstMonth);
+            return;
+          }
         }
+        // No calendar events — still load activities for current month
+        loadEvents(currentMonth);
       } catch {
-        setLoading(false);
+        // Even on error, try loading activities for current month
+        loadEvents(currentMonth);
       }
     }
-    jumpToFirstEvent();
+    loadInitialEvents();
   }, [farmer]);
 
   // Load crop recommendations

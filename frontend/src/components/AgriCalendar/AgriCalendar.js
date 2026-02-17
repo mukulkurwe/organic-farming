@@ -38,6 +38,7 @@ const EVENT_LEGEND = [
     emoji: "🟡",
   },
   { type: "risk_alert", label: "Risk Alerts", color: "#ef4444", emoji: "🔴" },
+  { type: "activity", label: "Logged Activities", color: "#8b5cf6", emoji: "🟣" },
 ];
 
 export default function AgriCalendar({
