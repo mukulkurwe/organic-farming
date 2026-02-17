@@ -20,15 +20,25 @@ const app = express();
 
 // app.use(cors({ origin: "http://localhost:3000" }));
 // for production + local
+// CORS (place before routes)
 app.use(cors({
   origin: [
     "http://localhost:3000",
     "https://organic-farming-teal.vercel.app",
   ],
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
   credentials: true,
 }));
 
-app.options("*", cors());
+// ✅ Preflight handler without app.options("*")
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 
 app.use(express.json());
 
