@@ -13,6 +13,7 @@ import plotsRouter from "./routes/plots.js";
 import masterRoutes from "./routes/masterRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import supervisorRoutes from "./routes/supervisorRoutes.js";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
