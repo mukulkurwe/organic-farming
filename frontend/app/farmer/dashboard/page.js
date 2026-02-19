@@ -107,7 +107,7 @@ export default function FarmerDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <button
-            onClick={() => router.push("/farm/map")}
+            onClick={() => router.push("/farmer/create-farm")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">🏡</div>
