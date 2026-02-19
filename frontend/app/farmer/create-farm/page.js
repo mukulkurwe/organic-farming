@@ -45,9 +45,7 @@ export default function CreateFarm() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
 
         {/* Header */}
-        <h1 className="text-center text-2xl font-bold text-gray-800">
-          Create Farm 
-        </h1>
+       
          <h1 className="text-center text-2xl font-bold text-gray-800">
           Create Organic Farming 
         </h1>
