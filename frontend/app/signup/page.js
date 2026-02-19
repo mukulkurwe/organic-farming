@@ -130,7 +130,11 @@ export default function SignupPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+            className="w-full px-4 py-3 rounded-xl border border-gray-300 
+           bg-white text-gray-900 placeholder:text-gray-400
+           focus:outline-none focus:ring-2 focus:ring-green-500 
+           focus:border-green-500 transition"
+
             />
           </div>
 
@@ -147,9 +151,16 @@ export default function SignupPage() {
               onChange={handleChange}
               maxLength={10}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+           bg-white text-gray-900 placeholder:text-gray-400
+           focus:outline-none focus:ring-2 focus:ring-green-500
+           focus:border-green-500 transition"
+
             />
-            <p className="text-xs text-gray-500 mt-1">10 digit mobile number</p>
+         <p className="text-xs text-gray-700 mt-1">
+  10 digit mobile number
+</p>
+
           </div>
 
           {/* Role */}
