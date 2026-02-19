@@ -135,7 +135,7 @@ export default function AdminDashboard() {
 
           {/* Card 3 – System settings (toast for now) */}
           <button
-            onClick={() => toast.info("System settings coming soon!")}
+            // onClick={() => toast.info("System settings coming soon!")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">⚙️</div>
