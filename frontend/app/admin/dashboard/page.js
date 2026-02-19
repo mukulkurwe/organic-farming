@@ -22,14 +22,14 @@ export default function AdminDashboard() {
 
     try {
       const parsedUser = JSON.parse(userData);
-      
+
       // Check if user is admin
       if (parsedUser.role !== "admin") {
         toast.error("Access denied. Admin only.");
         router.push("/farmer/dashboard");
         return;
       }
-      
+
       setUser(parsedUser);
     } catch (error) {
       console.error("Error parsing user data:", error);
@@ -107,19 +107,21 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          {/* Card 1 – Go to supervisor dashboard */}
           <button
-            onClick={() => toast.info("User management coming soon!")}
+            onClick={() => router.push("/supervisor/dashboard")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">👥</div>
             <h3 className="text-lg font-bold text-gray-800 mb-2">
-              Manage Users
+              Manage Users & Activities
             </h3>
             <p className="text-sm text-gray-600">
               View and manage user accounts
             </p>
           </button>
 
+          {/* Card 2 – Crop master (toast for now) */}
           <button
             onClick={() => toast.info("Crop master coming soon!")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
@@ -128,11 +130,10 @@ export default function AdminDashboard() {
             <h3 className="text-lg font-bold text-gray-800 mb-2">
               Crop Master
             </h3>
-            <p className="text-sm text-gray-600">
-              Manage crop database
-            </p>
+            <p className="text-sm text-gray-600">Manage crop database</p>
           </button>
 
+          {/* Card 3 – System settings (toast for now) */}
           <button
             onClick={() => toast.info("System settings coming soon!")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
@@ -159,7 +160,9 @@ export default function AdminDashboard() {
             </div>
             <div>
               <p className="text-sm text-gray-600">Phone</p>
-              <p className="text-lg font-medium text-gray-800">{user?.phone}</p>
+              <p className="text-lg font-medium text-gray-800">
+                {user?.phone}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-600">Role</p>
