@@ -37,7 +37,7 @@ export const signup = async (req, res) => {
 
     // Check if user already exists
     const existingUser = await pool.query(
-      "SELECT * FROM users WHERE phone = $1",
+      "SELECT id FROM users WHERE phone = $1",
       [phone]
     );
 
@@ -52,9 +52,9 @@ export const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Insert new user
+    // Insert new user (use password_hash column)
     const result = await pool.query(
-      `INSERT INTO users (name, phone, password, role)
+      `INSERT INTO users (name, phone, password_hash, role)
        VALUES ($1, $2, $3, $4)
        RETURNING id, name, phone, role, created_at`,
       [name, phone, hashedPassword, role || "farmer"]
@@ -108,7 +108,7 @@ export const login = async (req, res) => {
 
     // Find user by phone
     const result = await pool.query(
-      "SELECT * FROM users WHERE phone = $1",
+      "SELECT id, name, phone, password_hash, role, created_at FROM users WHERE phone = $1",
       [phone]
     );
 
@@ -121,8 +121,8 @@ export const login = async (req, res) => {
 
     const user = result.rows[0];
 
-    // Check if password exists
-    if (!user.password) {
+    // Check if password hash exists
+    if (!user.password_hash) {
       return res.status(401).json({
         ok: false,
         message: "Please set up your password first",
@@ -130,7 +130,7 @@ export const login = async (req, res) => {
     }
 
     // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
       return res.status(401).json({
