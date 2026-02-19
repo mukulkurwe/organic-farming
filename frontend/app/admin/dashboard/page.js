@@ -123,7 +123,7 @@ export default function AdminDashboard() {
 
           {/* Card 2 – Crop master (toast for now) */}
           <button
-            onClick={() => toast.info("Crop master coming soon!")}
+            // onClick={() => toast.info("Crop master coming soon!")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">🌾</div>
