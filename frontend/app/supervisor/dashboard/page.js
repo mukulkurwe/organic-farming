@@ -297,7 +297,7 @@ export default function SupervisorDashboardPage() {
             {/* Supervisor info */}
             <div className="flex items-center gap-3">
               <div className="text-right text-sm">
-                <div className="font-semibold text-white">Supervisor Rajesh</div>
+                <div className="font-semibold text-white">Admin</div>
                 <div className="text-xs text-slate-300">This Month</div>
               </div>
               <div className="h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold shadow-md">
