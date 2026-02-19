@@ -47,6 +47,7 @@ app.use(express.json());
    ROUTES
 ======================== */
 
+app.use("/api/auth", authRoutes);
 app.use("/api", farmRoutes);
 app.use("/api", plotsRouter);
 app.use("/api", masterRoutes);
