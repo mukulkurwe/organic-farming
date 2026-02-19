@@ -161,7 +161,9 @@ export default function SignupPage() {
               name="role"
               value={formData.role}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+                       !bg-white !text-gray-900
+                       focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             >
               <option value="farmer">Farmer</option>
               <option value="admin">Admin</option>
@@ -181,8 +183,11 @@ export default function SignupPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+             bg-white text-gray-900 placeholder:text-gray-400
+             focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
+
             <p className="text-xs text-gray-500 mt-1">
               At least 6 characters
             </p>
@@ -200,7 +205,9 @@ export default function SignupPage() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+              className="w-full px-4 py-3 rounded-xl border border-gray-300
+             bg-white text-gray-900 placeholder:text-gray-400
+             focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
             />
           </div>
 
@@ -208,9 +215,8 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 shadow-lg shadow-green-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
+            className={`w-full py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 shadow-lg shadow-green-500/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 ${loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
           >
             {loading ? "Creating Account..." : "Sign Up"}
           </button>
