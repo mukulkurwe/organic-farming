@@ -133,7 +133,7 @@ export default function FarmerDashboard() {
           </button>
 
           <button
-            onClick={() => toast.info("Feature coming soon!")}
+            // onClick={() => toast.info("Feature coming soon!")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">📊</div>
