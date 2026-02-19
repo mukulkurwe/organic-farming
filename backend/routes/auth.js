@@ -1,9 +1,15 @@
-// import express from "express";
+// backend/routes/auth.js
+import express from "express";
+import { signup, login, getCurrentUser } from "../controllers/authController.js";
+import { authenticate } from "../middleware/auth.js";
 
-// // const router = express.Router();
+const router = express.Router();
 
-// // router.post("/login", (req, res) => {
-// //   res.json({ message: "Login API Working" });
-// // });
+// Public routes
+router.post("/signup", signup);
+router.post("/login", login);
 
-// // export default router;
+// Protected routes
+router.get("/me", authenticate, getCurrentUser);
+
+export default router;
