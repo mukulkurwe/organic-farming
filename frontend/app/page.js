@@ -128,12 +128,16 @@ export default function RoleSelectionPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-100 via-green-200 to-green-300">
       {/* Card */}
       <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-12 border border-gray-200">
         
         {/* Icon */}
-        <div className="flex justify-center mb-6">
+         <div className="text-3xl mb-2 text-center">
+                              🌾
+                         </div>
+
+        {/* <div className="flex justify-center mb-6">
           <div className="w-20 h-20 rounded-full border-2 border-gray-700 flex items-center justify-center">
             <svg 
               className="w-10 h-10 text-gray-700" 
@@ -150,12 +154,12 @@ export default function RoleSelectionPage() {
               <circle cx="12" cy="6" r="2" fill="currentColor" />
             </svg>
           </div>
-        </div>
+        </div> */}
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Farm Management
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 pt-2">
+           Organic Farming Management
           </h1>
           <p className="text-gray-500 text-base">
             Select your role to continue
