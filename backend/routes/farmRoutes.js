@@ -29,6 +29,9 @@ import {
   saveFarmBoundary,
   // recalculateFarmMetrics
 } from "../controllers/landmapping.js";
+import {
+  getFarmBoundary,   // ✅ add this
+} from "../controllers/farmController.js";
 
 const router = express.Router();
 
@@ -42,6 +45,15 @@ router.post("/farms", createFarm);
    GET ALL FARMS
    GET /api/farms
 ========================================== */
+
+// ✅ read boundary
+router.get("/farms/:farmId/boundary", getFarmBoundary);
+
+
+// ✅ save/update boundary (already working)
+router.post("/farms/:farmId/boundary", saveFarmBoundary);
+
+
 router.get("/farms", async (req, res) => {
   try {
     const result = await pool.query(
