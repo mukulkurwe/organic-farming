@@ -14,6 +14,7 @@ import masterRoutes from "./routes/masterRoutes.js";
 import activityRoutes from "./routes/activityRoutes.js";
 import supervisorRoutes from "./routes/supervisorRoutes.js";
 import authRoutes from "./routes/auth.js";
+import plotRoutes from "./routes/plotRoutes.js";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use("/api", plotsRouter);
 app.use("/api", masterRoutes);
 app.use("/api/activities", activityRoutes);
 app.use("/api/supervisor", supervisorRoutes);
+app.use("/api", plotRoutes);
 
 
 
