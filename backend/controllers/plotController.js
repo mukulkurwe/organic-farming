@@ -9,7 +9,7 @@ export const getPlotsByFarm = async (req, res) => {
     const { farmId } = req.params;
 
     const result = await pool.query(
-      `SELECT id, farm_id, polygon, crop, area, slope_percent, risk_level, created_at
+      `SELECT id, farm_id, polygon, crop, area, slope_percent, risk_level
        FROM plots
        WHERE farm_id = $1
        ORDER BY id`,
@@ -30,25 +30,35 @@ export const createPlot = async (req, res) => {
   try {
     const { farmId } = req.params;
 
-    // NOTE: support both "polygon" and "boundary" from frontend
+    // body sent from React
     const polygon = req.body.polygon || req.body.boundary;
     const { crop, area, slope_percent, risk_level } = req.body;
 
-    if (!polygon) {
-      return res.status(400).json({ message: "polygon (or boundary) is required" });
+    // Basic validation
+    if (!Array.isArray(polygon) || polygon.length < 3) {
+      return res.status(400).json({ message: "polygon must have at least 3 points" });
     }
 
-    // INSERT using your real columns
+    const parsedArea =
+      area === undefined || area === null || Number.isNaN(Number(area))
+        ? null
+        : Number(area);
+
+    const parsedSlope =
+      slope_percent === undefined || slope_percent === null || Number.isNaN(Number(slope_percent))
+        ? null
+        : Number(slope_percent);
+
     const result = await pool.query(
       `INSERT INTO plots (farm_id, polygon, crop, area, slope_percent, risk_level)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, farm_id, polygon, crop, area, slope_percent, risk_level, created_at`,
+       RETURNING id, farm_id, polygon, crop, area, slope_percent, risk_level`,
       [
         Number(farmId),
         JSON.stringify(polygon),
         crop || null,
-        area != null ? Number(area) : null,
-        slope_percent != null ? Number(slope_percent) : null,
+        parsedArea,
+        parsedSlope,
         risk_level || null,
       ]
     );
@@ -59,21 +69,5 @@ export const createPlot = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Failed to create plot", error: error.message });
-  }
-};
-
-/* ============================
-   DELETE PLOT (optional)
-============================ */
-export const deletePlot = async (req, res) => {
-  try {
-    const { plotId } = req.params;
-
-    await pool.query(`DELETE FROM plots WHERE id = $1`, [Number(plotId)]);
-
-    return res.json({ message: "Plot deleted ✅" });
-  } catch (error) {
-    console.error("DELETE PLOT ERROR:", error.message);
-    return res.status(500).json({ message: "Failed to delete plot" });
   }
 };
