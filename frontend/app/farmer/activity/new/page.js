@@ -1,10 +1,10 @@
-// // // frontend/app/farmer/activity/new/page.js
+
+
+// // frontend/app/farmer/activity/new/page.js
 // "use client";
 
 // import { useEffect, useState } from "react";
-// // import { apiGet, apiPost } from "../../../../src/lib/api.js";
-// import { apiGet, apiPost } from "@/lib/api";
-
+// import api from "@/services/api"; // ✅ use the same axios client as login
 
 // export default function NewActivityPage() {
 //   const [date, setDate] = useState(() =>
@@ -39,15 +39,17 @@
 //     async function loadMaster() {
 //       try {
 //         const [farmsRes, inputsRes, cropsRes, workersRes] = await Promise.all([
-//           apiGet("/farms"),
-//           apiGet("/inputs"),
-//           apiGet("/crops"),
-//           apiGet("/workers", { farm_id: 1 }), // temp
+//           api.get("/farms"),
+//           api.get("/inputs"),
+//           api.get("/crops"),
+//           // adjust if your backend expects a different way to send farm_id
+//           api.get("/workers", { params: { farm_id: 1 } }),
 //         ]);
-//         setFarms(farmsRes || []);
-//         setAvailableInputs(inputsRes || []);
-//         setCrops(cropsRes || []);
-//         setWorkers(workersRes || []);
+
+//         setFarms(farmsRes.data || []);
+//         setAvailableInputs(inputsRes.data || []);
+//         setCrops(cropsRes.data || []);
+//         setWorkers(workersRes.data || []);
 //       } catch (err) {
 //         console.error("loadMaster error", err);
 //       }
@@ -63,8 +65,8 @@
 //         return;
 //       }
 //       try {
-//         const res = await apiGet(`/farms/${farmId}/zones`);
-//         setZones(res || []);
+//         const res = await api.get(`/farms/${farmId}/zones`);
+//         setZones(res.data || []);
 //       } catch (err) {
 //         console.error("loadZones error", err);
 //       }
@@ -112,28 +114,26 @@
 //     setMessage("");
 
 //     try {
-//            const body = {
-//   farm_id: Number(farmId),
-//   zone_id: zoneId ? Number(zoneId) : null,       // ✅ avoid 0
-//   date,
-//   activity_type: activityType,
-//   crop_id: cropId ? Number(cropId) : null,
-//   remarks,
-//   created_by: createdBy,
-//   inputs: inputs  // ignored by backend for now, but OK
-//     .filter((i) => i.input_id)
-//     .map((i) => ({
-//       input_id: Number(i.input_id),
-//       quantity: i.quantity ? Number(i.quantity) : null,
-//       unit: i.unit,
-//       method: i.method,
-//     })),
-//   workers: selectedWorkers.map((id) => ({ worker_id: id })),
-// };
+//       const body = {
+//         farm_id: Number(farmId),
+//         zone_id: zoneId ? Number(zoneId) : null,
+//         date,
+//         activity_type: activityType,
+//         crop_id: cropId ? Number(cropId) : null,
+//         remarks,
+//         created_by: createdBy,
+//         inputs: inputs
+//           .filter((i) => i.input_id)
+//           .map((i) => ({
+//             input_id: Number(i.input_id),
+//             quantity: i.quantity ? Number(i.quantity) : null,
+//             unit: i.unit,
+//             method: i.method,
+//           })),
+//         workers: selectedWorkers.map((id) => ({ worker_id: id })),
+//       };
 
-
-
-//       await apiPost("/activities", body);
+//       await api.post("/activities", body);
 //       setMessage("Activity saved successfully.");
 //       setActivityType("");
 //       setRemarks("");
@@ -240,40 +240,40 @@
 //           </div>
 
 //           {/* Activity type */}
-//         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-//                <label className="block text-sm font-medium text-gray-600 mb-1">
-//                 Activity Type
-//               </label>
+//           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+//             <label className="block text-sm font-medium text-gray-600 mb-1">
+//               Activity Type
+//             </label>
 
-//                 <div className="grid grid-cols-2 gap-3">
-//                   {activityTypes.map((type) => (
-//                     <button
-//                       key={type}
-//                       type="button"
-//                       onClick={() => setActivityType(type)}
-//                       className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
-//                         activityType === type
-//                           ? "bg-green-50 border-green-500"
-//                           : "bg-white border-gray-300 hover:border-green-500"
-//                       }`}
-//                     >
-//                       <span className="text-3xl mb-2">
-//                         {type === "sowing" && "🌱"}
-//                         {type === "transplanting" && "🌾"}
-//                         {type === "irrigation" && "💧"}
-//                         {type === "pest_spray" && "🐛"}
-//                         {type === "biofertilizer" && "🌿"}
-//                         {type === "weeding" && "✂️"}
-//                         {type === "harvest" && "🌾"}
-//                         {type === "other" && "📋"}
-//                       </span>
-//                       <span className="text-xs font-medium text-gray-700 capitalize">
-//                         {type.replace("_", " ")}
-//                       </span>
-//                     </button>
-//                   ))}
-//                 </div>
-//               </div>
+//             <div className="grid grid-cols-2 gap-3">
+//               {activityTypes.map((type) => (
+//                 <button
+//                   key={type}
+//                   type="button"
+//                   onClick={() => setActivityType(type)}
+//                   className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+//                     activityType === type
+//                       ? "bg-green-50 border-green-500"
+//                       : "bg-white border-gray-300 hover:border-green-500"
+//                   }`}
+//                 >
+//                   <span className="text-3xl mb-2">
+//                     {type === "sowing" && "🌱"}
+//                     {type === "transplanting" && "🌾"}
+//                     {type === "irrigation" && "💧"}
+//                     {type === "pest_spray" && "🐛"}
+//                     {type === "biofertilizer" && "🌿"}
+//                     {type === "weeding" && "✂️"}
+//                     {type === "harvest" && "🌾"}
+//                     {type === "other" && "📋"}
+//                   </span>
+//                   <span className="text-xs font-medium text-gray-700 capitalize">
+//                     {type.replace("_", " ")}
+//                   </span>
+//                 </button>
+//               ))}
+//             </div>
+//           </div>
 
 //           {/* Inputs */}
 //           <div>
@@ -336,34 +336,25 @@
 //                   />
 
 //                   {/* Method */}
-//                   {/* <input
-//                     value={row.method}
-//                     onChange={(e) =>
-//                       handleInputChange(idx, "method", e.target.value)
-//                     }
-//                     placeholder="Method (manual / drip...)"
-//                     className="rounded-lg border border-gray-300 px-3 py-2 text-sm
-//                                text-gray-900 placeholder:text-gray-400 bg-white"
-//                   /> */}
-//                    <div>
-//                         <label className="block text-xs text-gray-600 mb-1">
-//                           Application Method
-//                         </label>
-//                         <select
-//                           value={row.method}
-//                           onChange={(e) =>
-//                             handleInputChange(idx, "method", e.target.value)
-//                           }
-//                           className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
-//                                      text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
-//                         >
-//                           <option value="">Select method</option>
-//                           <option value="manual_spraying">Manual Spraying</option>
-//                           <option value="drip_irrigation">Drip Irrigation</option>
-//                           <option value="broadcasting">Broadcasting</option>
-//                           <option value="manual_sowing">Manual Sowing</option>
-//                         </select>
-//                       </div>
+//                   <div>
+//                     <label className="block text-xs text-gray-600 mb-1">
+//                       Application Method
+//                     </label>
+//                     <select
+//                       value={row.method}
+//                       onChange={(e) =>
+//                         handleInputChange(idx, "method", e.target.value)
+//                       }
+//                       className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm
+//                                  text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+//                     >
+//                       <option value="">Select method</option>
+//                       <option value="manual_spraying">Manual Spraying</option>
+//                       <option value="drip_irrigation">Drip Irrigation</option>
+//                       <option value="broadcasting">Broadcasting</option>
+//                       <option value="manual_sowing">Manual Sowing</option>
+//                     </select>
+//                   </div>
 //                 </div>
 //               ))}
 //             </div>
@@ -434,6 +425,7 @@
 // }
 
 
+
 // frontend/app/farmer/activity/new/page.js
 "use client";
 
@@ -468,22 +460,21 @@ export default function NewActivityPage() {
   // TODO: replace with logged-in user id
   const createdBy = 1;
 
+  // -----------------------------
   // Load master data once
+  // -> farms should already be filtered by backend
+  //    to only return farms of the logged-in user
+  // -----------------------------
   useEffect(() => {
     async function loadMaster() {
       try {
-        const [farmsRes, inputsRes, cropsRes, workersRes] = await Promise.all([
-          api.get("/farms"),
+        const [farmsRes, inputsRes] = await Promise.all([
+          api.get("/farms"),     // ✅ backend should scope to current user
           api.get("/inputs"),
-          api.get("/crops"),
-          // adjust if your backend expects a different way to send farm_id
-          api.get("/workers", { params: { farm_id: 1 } }),
         ]);
 
         setFarms(farmsRes.data || []);
         setAvailableInputs(inputsRes.data || []);
-        setCrops(cropsRes.data || []);
-        setWorkers(workersRes.data || []);
       } catch (err) {
         console.error("loadMaster error", err);
       }
@@ -491,7 +482,9 @@ export default function NewActivityPage() {
     loadMaster();
   }, []);
 
+  // -----------------------------
   // Load zones when farm changes
+  // -----------------------------
   useEffect(() => {
     async function loadZones() {
       if (!farmId) {
@@ -506,6 +499,39 @@ export default function NewActivityPage() {
       }
     }
     loadZones();
+  }, [farmId]);
+
+  // -----------------------------
+  // Load crops + workers for selected farm
+  // crops: from plots table (per farm)
+  // workers: only workers assigned to that farm by admin
+  // -----------------------------
+  useEffect(() => {
+    async function loadFarmSpecificData() {
+      if (!farmId) {
+        setCrops([]);
+        setWorkers([]);
+        return;
+      }
+
+      try {
+        const [cropsRes, workersRes] = await Promise.all([
+          // ✅ backend: return crops for this farm
+          // ideally using plots table (distinct crop per plot)
+          api.get("/crops", { params: { farm_id: farmId } }),
+
+          // ✅ backend: return workers assigned to this farm
+          api.get("/workers", { params: { farm_id: farmId } }),
+        ]);
+
+        setCrops(cropsRes.data || []);
+        setWorkers(workersRes.data || []);
+      } catch (err) {
+        console.error("loadFarmSpecificData error", err);
+      }
+    }
+
+    loadFarmSpecificData();
   }, [farmId]);
 
   const activityTypes = [
