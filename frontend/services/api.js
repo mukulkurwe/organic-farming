@@ -32,10 +32,11 @@
 // export default api;
 
 // services/api.js
+// frontend/services/api.js (or src/services/api.js)
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // ✅
+  baseURL: process.env.NEXT_PUBLIC_API_URL, // e.g. https://organic-farming-7lw1.onrender.com/api in Vercel
   withCredentials: true,
 });
 
