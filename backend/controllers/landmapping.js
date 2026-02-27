@@ -15,8 +15,13 @@ export const createFarm = async (req, res) => {
     // TEMP farmer_id until auth is added
     const farmerId = 1;
 
+    // const result = await pool.query(
+    //   `INSERT INTO landmapping (farmer_id, name, location, total_area)
+    //    VALUES ($1, $2, $3, $4)
+    //    RETURNING *`,
+    //   [farmerId, name, location, total_area]
     const result = await pool.query(
-      `INSERT INTO landmapping (farmer_id, name, location, total_area)
+      `INSERT INTO farms (id, name, location, total_area)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
       [farmerId, name, location, total_area]
@@ -99,7 +104,10 @@ export const saveFarmBoundary = async (req, res) => {
 
     // Just save boundary as JSON. No slope/area here.
     await pool.query(
-      `UPDATE landmapping
+      // `UPDATE landmapping
+      //  SET boundary = $1
+      //  WHERE id = $2`,
+        `UPDATE farms
        SET boundary = $1
        WHERE id = $2`,
       [JSON.stringify(boundary), farmId]
