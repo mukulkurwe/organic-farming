@@ -46,19 +46,16 @@ export default function NewActivityPage() {
     return null;
   };
 
-  // Load master data once (farms, inputs, crops)
+  // Load master data once (farms filtered by owner, inputs, crops)
   useEffect(() => {
     async function loadMaster() {
       try {
-        console.log("[loadMaster] fetching farms, inputs, crops...");
+        const userId = getCreatedBy();
         const [farmsRes, inputsRes, cropsRes] = await Promise.all([
-          apiGet("/farms"),
+          apiGet("/farms", userId ? { owner_id: userId } : {}),
           apiGet("/inputs"),
           apiGet("/crops"),
         ]);
-        console.log("[loadMaster] farms:", farmsRes);
-        console.log("[loadMaster] inputs:", inputsRes);
-        console.log("[loadMaster] crops:", cropsRes);
         setFarms(farmsRes || []);
         setAvailableInputs(inputsRes || []);
         setCrops(cropsRes || []);

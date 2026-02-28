@@ -85,6 +85,54 @@ router.get("/farms/:id/zones", async (req, res) => {
 });
 
 /* ==========================================
+   CREATE ZONE FOR A FARM
+   POST /api/farms/:id/zones
+========================================== */
+router.post("/farms/:id/zones", async (req, res) => {
+  try {
+    const farmId = req.params.id;
+    const { name, area } = req.body;
+
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Zone name is required" });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO zones (farm_id, name, area)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [farmId, name.trim(), area || null]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("POST /farms/:id/zones error:", err.message);
+    res.status(500).json({ message: "Failed to create zone" });
+  }
+});
+
+/* ==========================================
+   DELETE ZONE
+   DELETE /api/zones/:zoneId
+========================================== */
+router.delete("/zones/:zoneId", async (req, res) => {
+  try {
+    const { zoneId } = req.params;
+    const result = await pool.query(
+      "DELETE FROM zones WHERE id = $1 RETURNING *",
+      [zoneId]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Zone not found" });
+    }
+    res.json({ message: "Zone deleted", zone: result.rows[0] });
+  } catch (err) {
+    console.error("DELETE /zones/:zoneId error:", err.message);
+    res.status(500).json({ message: "Failed to delete zone" });
+  }
+});
+
+/* ==========================================
    SAVE FARM BOUNDARY
    PUT /api/farms/:farmId/boundary
 ========================================== */
