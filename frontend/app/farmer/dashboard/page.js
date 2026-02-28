@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import api from "@/services/api";
 
 export default function FarmerDashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [farms, setFarms] = useState([]);
+  const [farmsLoading, setFarmsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in
@@ -30,6 +33,22 @@ export default function FarmerDashboard() {
       setLoading(false);
     }
   }, [router]);
+
+  // Fetch user's farms
+  useEffect(() => {
+    if (!user) return;
+    async function loadFarms() {
+      try {
+        const res = await api.get(`/farms?owner_id=${user.id}`);
+        setFarms(res.data || []);
+      } catch (err) {
+        console.error("Load farms error:", err);
+      } finally {
+        setFarmsLoading(false);
+      }
+    }
+    loadFarms();
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -107,7 +126,7 @@ export default function FarmerDashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/farmer/create-farm")}
             className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
           >
             <div className="text-3xl mb-2">🏡</div>
@@ -157,6 +176,86 @@ export default function FarmerDashboard() {
               Crop calendar and task advisory
             </p>
           </button>
+        </div>
+
+        {/* My Farms */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-gray-800">🌾 My Farms</h2>
+            <button
+              onClick={() => router.push("/farmer/create-farm")}
+              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition font-medium"
+            >
+              + Add Farm
+            </button>
+          </div>
+
+          {farmsLoading ? (
+            <div className="text-center py-6 text-gray-400 text-sm">
+              Loading farms...
+            </div>
+          ) : farms.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-5xl mb-3">🏡</p>
+              <p className="text-gray-600 font-medium">
+                No farms yet
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                Create your first farm to start managing operations
+              </p>
+              <button
+                onClick={() => router.push("/farmer/create-farm")}
+                className="mt-4 px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition"
+              >
+                Create Your First Farm
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {farms.map((farm) => (
+                <div
+                  key={farm.id}
+                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition bg-gradient-to-br from-white to-green-50"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-bold text-gray-800">{farm.name}</h3>
+                    {farm.boundary ? (
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                        ✅ Mapped
+                      </span>
+                    ) : (
+                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">
+                        ⏳ Unmapped
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mb-1">
+                    📍 {farm.location || "No location set"}
+                  </p>
+                  <p className="text-xs text-gray-400 mb-3">
+                    Created{" "}
+                    {farm.created_at
+                      ? new Date(farm.created_at).toLocaleDateString()
+                      : "—"}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => router.push(`/farm/${farm.id}/map`)}
+                      className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-green-300 text-green-700 hover:bg-green-50 transition font-medium text-center"
+                    >
+                      🗺️ Map
+                    </button>
+                    <button
+                      onClick={() => router.push(`/farm/${farm.id}/plots`)}
+                      className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium text-center"
+                    >
+                      📐 Plots
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Features Grid */}

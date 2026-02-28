@@ -18,7 +18,7 @@ router.get("/farms/:farmId/boundary", async (req, res) => {
   const { farmId } = req.params;
 
   const result = await pool.query(
-    "SELECT boundary FROM landmapping WHERE id = $1",
+    "SELECT boundary FROM farms WHERE id = $1",
     [farmId]
   );
 

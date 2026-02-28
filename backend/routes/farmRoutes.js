@@ -44,14 +44,22 @@ router.post("/farms", createFarm);
 ========================================== */
 router.get("/farms", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM farms ORDER BY id"
-    );
+    const { owner_id } = req.query;
+    let query = "SELECT * FROM farms";
+    const params = [];
+
+    if (owner_id) {
+      query += " WHERE owner_id = $1";
+      params.push(owner_id);
+    }
+
+    query += " ORDER BY created_at DESC, id DESC";
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
-  console.error("❌ /api/farms error:", err);
-  return res.status(500).json({ message: "Failed to fetch farms", error: err.message });
-}
+    console.error("❌ /api/farms error:", err);
+    return res.status(500).json({ message: "Failed to fetch farms", error: err.message });
+  }
 });
 
 /* ==========================================

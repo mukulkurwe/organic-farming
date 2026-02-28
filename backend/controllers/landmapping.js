@@ -10,16 +10,17 @@ import pool from "../config/db.js";
 ============================ */
 export const createFarm = async (req, res) => {
   try {
-    const { name, location, total_area } = req.body;
+    const { name, location, owner_id } = req.body;
 
-    // TEMP farmer_id until auth is added
-    const farmerId = 1;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Farm name is required" });
+    }
 
     const result = await pool.query(
-      `INSERT INTO landmapping (farmer_id, name, location, total_area)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO farms (name, location, owner_id)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [farmerId, name, location, total_area]
+      [name.trim(), location || null, owner_id || null]
     );
 
     res.status(201).json(result.rows[0]);
@@ -93,17 +94,21 @@ export const createFarm = async (req, res) => {
 export const saveFarmBoundary = async (req, res) => {
   try {
     const { farmId } = req.params;
-    const { boundary } = req.body; // coming from frontend
+    const { boundary } = req.body;
 
     console.log("saveFarmBoundary CALLED", farmId);
 
-    // Just save boundary as JSON. No slope/area here.
-    await pool.query(
-      `UPDATE landmapping
+    const result = await pool.query(
+      `UPDATE farms
        SET boundary = $1
-       WHERE id = $2`,
+       WHERE id = $2
+       RETURNING id`,
       [JSON.stringify(boundary), farmId]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Farm not found" });
+    }
 
     return res.json({ message: "Boundary saved ✅" });
   } catch (error) {
