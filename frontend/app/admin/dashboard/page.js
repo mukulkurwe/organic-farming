@@ -309,12 +309,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* ── Quick Actions ── */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
           {[
-            { key: "users", icon: "👥", title: "Manage Users", desc: "View and manage user accounts" },
-            { key: "crops", icon: "🌾", title: "Crop Master", desc: "Add or remove crops" },
-            { key: "inputs", icon: "📦", title: "Input Master", desc: "Manage seeds, fertilizers, pesticides" },
-            { key: "workers", icon: "👷", title: "Worker Master", desc: "Manage farm workers" },
+            { key: "users",   icon: "👥", title: "Manage Users",     desc: "View and manage user accounts" },
+            { key: "crops",   icon: "🌾", title: "Crop Master",       desc: "Add or remove crops" },
+            { key: "inputs",  icon: "📦", title: "Input Master",      desc: "Manage seeds, fertilizers, pesticides" },
+            { key: "workers", icon: "👷", title: "Worker Master",     desc: "Manage farm workers" },
           ].map((item) => (
             <button
               key={item.key}
@@ -328,6 +328,15 @@ export default function AdminDashboard() {
               <p className="text-sm text-gray-600">{item.desc}</p>
             </button>
           ))}
+          {/* Demand & Supply — navigates to dedicated page */}
+          <button
+            onClick={() => router.push("/admin/demand-supply")}
+            className="rounded-xl shadow-md p-6 hover:shadow-lg transition text-left bg-white hover:bg-violet-50 border-2 border-transparent hover:border-violet-300"
+          >
+            <div className="text-3xl mb-2">📊</div>
+            <h3 className="text-lg font-bold text-gray-800 mb-1">Demand &amp; Supply</h3>
+            <p className="text-sm text-gray-600">Market gap analysis &amp; matching</p>
+          </button>
         </div>
 
         {/* ── Panels ── */}

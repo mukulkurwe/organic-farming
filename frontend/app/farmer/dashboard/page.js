@@ -20,6 +20,8 @@ import {
   BadgeCheck,
   Clock4,
   Tractor,
+  TrendingUp,
+  Package,
 } from "lucide-react";
 
 export default function FarmerDashboard() {
@@ -151,11 +153,13 @@ export default function FarmerDashboard() {
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
-              { label: "Create Farm",   desc: "Add a new farm",               icon: Home,         path: "/farmer/create-farm",  color: "text-emerald-600", bg: "bg-emerald-50" },
-              { label: "Log Activity",  desc: "Record farm tasks",            icon: ClipboardList, path: "/farmer/activity/new", color: "text-blue-600",    bg: "bg-blue-50" },
-              { label: "View Reports",  desc: "Performance analytics",        icon: BarChart2,     path: "/farmer/reports",      color: "text-violet-600",  bg: "bg-violet-50" },
-              { label: "Agri Calendar", desc: "Crop schedule & advisory",     icon: CalendarDays,  path: "/farmer/calendar",     color: "text-amber-600",   bg: "bg-amber-50" },
-              { label: "Farm Sales",    desc: "Sell produce & track revenue", icon: ShoppingCart,  path: "/farmer/sales",        color: "text-rose-600",    bg: "bg-rose-50" },
+              { label: "Create Farm",     desc: "Add a new farm",               icon: Home,         path: "/farmer/create-farm",    color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Log Activity",    desc: "Record farm tasks",            icon: ClipboardList, path: "/farmer/activity/new",   color: "text-blue-600",    bg: "bg-blue-50" },
+              { label: "View Reports",    desc: "Performance analytics",        icon: BarChart2,     path: "/farmer/reports",        color: "text-violet-600",  bg: "bg-violet-50" },
+              { label: "Agri Calendar",   desc: "Crop schedule & advisory",     icon: CalendarDays,  path: "/farmer/calendar",       color: "text-amber-600",   bg: "bg-amber-50" },
+              { label: "Farm Sales",      desc: "Sell produce & track revenue", icon: ShoppingCart,  path: "/farmer/sales",          color: "text-rose-600",    bg: "bg-rose-50" },
+              { label: "Supply Forecasts",desc: "Declare upcoming harvests",    icon: TrendingUp,    path: "/farmer/supply",         color: "text-teal-600",    bg: "bg-teal-50" },
+              { label: "Demand Board",    desc: "Browse live buyer requests",   icon: Package,       path: "/farmer/demand-board",   color: "text-indigo-600",  bg: "bg-indigo-50" },
             ].map(({ label, desc, icon: Icon, path, color, bg }) => (
               <button key={path} onClick={() => router.push(path)}
                 className="bg-white border border-gray-200 rounded-2xl p-5 text-left hover:shadow-md hover:border-gray-300 transition group">

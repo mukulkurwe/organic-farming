@@ -15,6 +15,7 @@ import supervisorRoutes from "./routes/supervisorRoutes.js";
 import authRoutes from "./routes/auth.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
 import salesRoutes from "./routes/salesRoutes.js";
+import demandSupplyRoutes from "./routes/demandSupplyRoutes.js";
 
 const app = express();
 
@@ -55,6 +56,7 @@ app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/calendar", calendarRoutes);
 app.use("/api/sales", salesRoutes);
+app.use("/api/ds", demandSupplyRoutes);
 
 /* ========================
    HEALTH CHECK
