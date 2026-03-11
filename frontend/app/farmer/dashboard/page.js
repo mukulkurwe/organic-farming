@@ -4,6 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import api from "@/services/api";
+import {
+  Home,
+  ClipboardList,
+  BarChart2,
+  CalendarDays,
+  ShoppingCart,
+  MapPin,
+  Grid,
+  Map,
+  Plus,
+  LogOut,
+  User,
+  Phone,
+  BadgeCheck,
+  Clock4,
+  Tractor,
+} from "lucide-react";
 
 export default function FarmerDashboard() {
   const router = useRouter();
@@ -67,189 +84,149 @@ export default function FarmerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                🌾 Farmer Dashboard
-              </h1>
-              <p className="text-sm text-gray-600">
-                Welcome, {user?.name || "Farmer"}!
-              </p>
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-50 rounded-xl">
+              <Tractor size={20} className="text-emerald-600" />
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
+            <div>
+              <h1 className="text-base font-bold text-gray-900 leading-none">Farmer Dashboard</h1>
+              <p className="text-xs text-gray-500 mt-0.5">Welcome back, {user?.name || "Farmer"}</p>
+            </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition"
+          >
+            <LogOut size={15} />
+            Logout
+          </button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* User Info Card */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Account Information
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">Name</p>
-              <p className="text-lg font-medium text-gray-800">{user?.name}</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Account Card */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Account Information</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg"><User size={16} className="text-gray-500" /></div>
+              <div>
+                <p className="text-xs text-gray-400">Name</p>
+                <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Phone</p>
-              <p className="text-lg font-medium text-gray-800">{user?.phone}</p>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg"><Phone size={16} className="text-gray-500" /></div>
+              <div>
+                <p className="text-xs text-gray-400">Phone</p>
+                <p className="text-sm font-semibold text-gray-800">{user?.phone}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Role</p>
-              <p className="text-lg font-medium text-green-600 capitalize">
-                {user?.role}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-50 rounded-lg"><BadgeCheck size={16} className="text-emerald-600" /></div>
+              <div>
+                <p className="text-xs text-gray-400">Role</p>
+                <p className="text-sm font-semibold text-emerald-700 capitalize">{user?.role}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Member Since</p>
-              <p className="text-lg font-medium text-gray-800">
-                {user?.created_at
-                  ? new Date(user.created_at).toLocaleDateString()
-                  : "N/A"}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-100 rounded-lg"><Clock4 size={16} className="text-gray-500" /></div>
+              <div>
+                <p className="text-xs text-gray-400">Member Since</p>
+                <p className="text-sm font-semibold text-gray-800">
+                  {user?.created_at ? new Date(user.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "N/A"}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <button
-            onClick={() => router.push("/farmer/create-farm")}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
-          >
-            <div className="text-3xl mb-2">🏡</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              Create Farm
-            </h3>
-            <p className="text-sm text-gray-600">
-              Add a new farm to your account
-            </p>
-          </button>
-
-          <button
-            onClick={() => router.push("/farmer/activity/new")}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
-          >
-            <div className="text-3xl mb-2">📝</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              Log Activity
-            </h3>
-            <p className="text-sm text-gray-600">
-              Record farm activities and tasks
-            </p>
-          </button>
-
-          <button
-            onClick={() => router.push("/farmer/reports")}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
-          >
-            <div className="text-3xl mb-2">📊</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              View Reports
-            </h3>
-            <p className="text-sm text-gray-600">
-              Analyze your farm performance
-            </p>
-          </button>
-
-          <button
-            onClick={() => router.push("/farmer/calendar")}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition text-left"
-          >
-            <div className="text-3xl mb-2">📅</div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
-              Agri Calendar
-            </h3>
-            <p className="text-sm text-gray-600">
-              Crop calendar and task advisory
-            </p>
-          </button>
+        <div>
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[
+              { label: "Create Farm",   desc: "Add a new farm",               icon: Home,         path: "/farmer/create-farm",  color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Log Activity",  desc: "Record farm tasks",            icon: ClipboardList, path: "/farmer/activity/new", color: "text-blue-600",    bg: "bg-blue-50" },
+              { label: "View Reports",  desc: "Performance analytics",        icon: BarChart2,     path: "/farmer/reports",      color: "text-violet-600",  bg: "bg-violet-50" },
+              { label: "Agri Calendar", desc: "Crop schedule & advisory",     icon: CalendarDays,  path: "/farmer/calendar",     color: "text-amber-600",   bg: "bg-amber-50" },
+              { label: "Farm Sales",    desc: "Sell produce & track revenue", icon: ShoppingCart,  path: "/farmer/sales",        color: "text-rose-600",    bg: "bg-rose-50" },
+            ].map(({ label, desc, icon: Icon, path, color, bg }) => (
+              <button key={path} onClick={() => router.push(path)}
+                className="bg-white border border-gray-200 rounded-2xl p-5 text-left hover:shadow-md hover:border-gray-300 transition group">
+                <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3`}>
+                  <Icon size={20} className={color} />
+                </div>
+                <h3 className="text-sm font-semibold text-gray-800 group-hover:text-gray-900">{label}</h3>
+                <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* My Farms */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">🌾 My Farms</h2>
-            <button
-              onClick={() => router.push("/farmer/create-farm")}
-              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition font-medium"
-            >
-              + Add Farm
+        <div>
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">My Farms</h2>
+            <button onClick={() => router.push("/farmer/create-farm")}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+              <Plus size={13} /> Add Farm
             </button>
           </div>
 
           {farmsLoading ? (
-            <div className="text-center py-6 text-gray-400 text-sm">
-              Loading farms...
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => <div key={i} className="bg-white rounded-2xl border border-gray-100 h-40 animate-pulse" />)}
             </div>
           ) : farms.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-5xl mb-3">🏡</p>
-              <p className="text-gray-600 font-medium">
-                No farms yet
-              </p>
-              <p className="text-sm text-gray-500 mt-1">
-                Create your first farm to start managing operations
-              </p>
-              <button
-                onClick={() => router.push("/farmer/create-farm")}
-                className="mt-4 px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition"
-              >
+            <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
+              <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Home size={24} className="text-gray-400" />
+              </div>
+              <p className="font-semibold text-gray-700">No farms yet</p>
+              <p className="text-sm text-gray-400 mt-1">Create your first farm to start managing operations</p>
+              <button onClick={() => router.push("/farmer/create-farm")}
+                className="mt-4 px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition">
                 Create Your First Farm
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {farms.map((farm) => (
-                <div
-                  key={farm.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition bg-gradient-to-br from-white to-green-50"
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold text-gray-800">{farm.name}</h3>
+                <div key={farm.id}
+                  className="bg-white border border-gray-200 rounded-2xl p-5 hover:shadow-md hover:border-gray-300 transition">
+                  <div className="flex items-start justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900 text-base">{farm.name}</h3>
                     {farm.boundary ? (
-                      <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
-                        ✅ Mapped
+                      <span className="inline-flex items-center gap-1 text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-semibold">
+                        <BadgeCheck size={11} /> Mapped
                       </span>
                     ) : (
-                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">
-                        ⏳ Unmapped
+                      <span className="inline-flex items-center gap-1 text-xs bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full font-semibold">
+                        <Clock4 size={11} /> Unmapped
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 mb-1">
-                    📍 {farm.location || "No location set"}
-                  </p>
-                  <p className="text-xs text-gray-400 mb-3">
-                    Created{" "}
-                    {farm.created_at
-                      ? new Date(farm.created_at).toLocaleDateString()
-                      : "—"}
+                  <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
+                    <MapPin size={13} className="text-gray-400" />
+                    {farm.location || "No location set"}
+                  </div>
+                  <p className="text-xs text-gray-400 mb-4">
+                    Created {farm.created_at ? new Date(farm.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                   </p>
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => router.push(`/farm/${farm.id}/map`)}
-                      className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-green-300 text-green-700 hover:bg-green-50 transition font-medium text-center"
-                    >
-                      🗺️ Map
+                    <button onClick={() => router.push(`/farm/${farm.id}/map`)}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition">
+                      <Map size={13} /> Map
                     </button>
-                    <button
-                      onClick={() => router.push(`/farm/${farm.id}/plots`)}
-                      className="flex-1 px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium text-center"
-                    >
-                      📐 Plots
+                    <button onClick={() => router.push(`/farm/${farm.id}/plots`)}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition">
+                      <Grid size={13} /> Plots
                     </button>
                   </div>
                 </div>
@@ -258,54 +235,23 @@ export default function FarmerDashboard() {
           )}
         </div>
 
-        {/* Features Grid */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            Farm Management Features
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">Land Mapping</h3>
-              <p className="text-sm text-gray-600">
-                Draw and manage farm boundaries
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Crop Planning
-              </h3>
-              <p className="text-sm text-gray-600">
-                Plan and track crop cycles
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Worker Management
-              </h3>
-              <p className="text-sm text-gray-600">
-                Manage farm workers and tasks
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Activity Tracking
-              </h3>
-              <p className="text-sm text-gray-600">Log daily farm activities</p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Weather Alerts
-              </h3>
-              <p className="text-sm text-gray-600">
-                Get weather-based recommendations
-              </p>
-            </div>
-            <div className="border border-gray-200 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-800 mb-2">
-                Reports & Analytics
-              </h3>
-              <p className="text-sm text-gray-600">View insights and trends</p>
-            </div>
+        {/* Features */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Platform Features</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {[
+              { title: "Land Mapping",       desc: "Draw and manage farm boundaries" },
+              { title: "Crop Planning",       desc: "Plan and track crop cycles" },
+              { title: "Worker Management",   desc: "Manage farm workers and tasks" },
+              { title: "Activity Tracking",   desc: "Log daily farm activities" },
+              { title: "Weather Alerts",      desc: "Get weather-based recommendations" },
+              { title: "Reports & Analytics", desc: "View insights and trends" },
+            ].map(({ title, desc }) => (
+              <div key={title} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
+                <h3 className="text-sm font-semibold text-gray-800 mb-1">{title}</h3>
+                <p className="text-xs text-gray-500">{desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </main>

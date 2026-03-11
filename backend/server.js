@@ -1,6 +1,8 @@
 // backend/server.js
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
+import express from "express";
 import cors from "cors";
 
 import pool from "./config/db.js";
@@ -12,8 +14,7 @@ import activityRoutes from "./routes/activityRoutes.js";
 import supervisorRoutes from "./routes/supervisorRoutes.js";
 import authRoutes from "./routes/auth.js";
 import calendarRoutes from "./routes/calendarRoutes.js";
-
-dotenv.config();
+import salesRoutes from "./routes/salesRoutes.js";
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/api/activities", activityRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/calendar", calendarRoutes);
+app.use("/api/sales", salesRoutes);
 
 /* ========================
    HEALTH CHECK

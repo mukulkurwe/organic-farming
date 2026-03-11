@@ -164,12 +164,12 @@ export const getCalendarAgg = async (req, res) => {
          jsonb_object_agg(a.activity_type, cnt_by_type) AS by_type
        FROM (
          SELECT
-           date,
-           activity_type,
+           a.date,
+           a.activity_type,
            COUNT(*) AS cnt_by_type
-         FROM activities
+         FROM activities a
          ${whereClause}
-         GROUP BY date, activity_type
+         GROUP BY a.date, a.activity_type
        ) a
        GROUP BY a.date
        ORDER BY a.date`,
