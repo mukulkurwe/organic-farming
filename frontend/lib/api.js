@@ -1,6 +1,13 @@
 // frontend/lib/api.js
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
+// Attach JWT from localStorage to every request (client-side only)
+function authHeaders() {
+  if (typeof window === "undefined") return {};
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 // shared helper so we don't duplicate logic
 async function handleError(res, path, method) {
   let errorBody = null;
@@ -18,7 +25,7 @@ async function handleError(res, path, method) {
     (errorBody.error || errorBody.message || JSON.stringify(errorBody));
 
   throw new Error(
-    messageFromBody || `${method} ${path} failed (${res.status})`
+    messageFromBody || `${method} ${path} failed (${res.status})`,
   );
 }
 
@@ -31,7 +38,10 @@ export async function apiGet(path, params = {}) {
     }
   });
 
-  const res = await fetch(url.toString(), { cache: "no-store" });
+  const res = await fetch(url.toString(), {
+    cache: "no-store",
+    headers: { ...authHeaders() },
+  });
 
   if (!res.ok) {
     await handleError(res, path, "GET");
@@ -43,7 +53,7 @@ export async function apiGet(path, params = {}) {
 export async function apiPost(path, body) {
   const res = await fetch(API_BASE + path, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...authHeaders() },
     body: JSON.stringify(body),
   });
 

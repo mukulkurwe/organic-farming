@@ -5,17 +5,18 @@ import {
   getActivities,
   getCalendarAgg,
 } from "../controllers/activityController.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = express.Router();
 
 // POST /api/activities  (with inputs + workers in a transaction)
-router.post("/", createActivity);
+router.post("/", authenticate, createActivity);
 
 // GET /api/activities?farm_id=&date=&from=&to=&zone_id=&activity_type=&worker_id=
-router.get("/", getActivities);
+router.get("/", authenticate, getActivities);
 
 // GET /api/activities/calendar?farm_id=&from=&to=
-router.get("/calendar", getCalendarAgg);
+router.get("/calendar", authenticate, getCalendarAgg);
 
 // GET /api/activities/as-events?farm_id=&month=YYYY-MM
 // Returns activities shaped like calendar_events so the AgriCalendar component can render them
@@ -32,12 +33,15 @@ const ACTIVITY_COLORS = {
   other: "#6b7280",
 };
 
-router.get("/as-events", async (req, res) => {
+router.get("/as-events", authenticate, async (req, res) => {
   try {
     const { farm_id, month } = req.query;
 
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(`f.owner_id = $${params.length}`);
 
     if (farm_id) {
       params.push(farm_id);
@@ -48,7 +52,7 @@ router.get("/as-events", async (req, res) => {
       const monthStart = `${month}-01`;
       params.push(monthStart);
       conditions.push(
-        `a.date >= $${params.length}::date AND a.date < ($${params.length}::date + INTERVAL '1 month')`
+        `a.date >= $${params.length}::date AND a.date < ($${params.length}::date + INTERVAL '1 month')`,
       );
     }
 
@@ -65,7 +69,7 @@ router.get("/as-events", async (req, res) => {
        LEFT JOIN crops c ON a.crop_id = c.id
        ${whereClause}
        ORDER BY a.date, a.id`,
-      params
+      params,
     );
 
     // Shape like calendar_events so AgriCalendar can render them
@@ -90,12 +94,17 @@ router.get("/as-events", async (req, res) => {
 
 // GET /api/activities/report?farm_id=&from=&to=
 // Returns a comprehensive report summary
-router.get("/report", async (req, res) => {
+router.get("/report", authenticate, async (req, res) => {
   try {
     const { farm_id, from, to } = req.query;
 
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM farms f_scope WHERE f_scope.id = a.farm_id AND f_scope.owner_id = $${params.length})`,
+    );
 
     if (farm_id) {
       params.push(farm_id);
@@ -117,7 +126,7 @@ router.get("/report", async (req, res) => {
     // 1) Total activities
     const totalRes = await pool.query(
       `SELECT COUNT(*)::int AS total FROM activities a ${whereClause}`,
-      params
+      params,
     );
 
     // 2) By activity type
@@ -125,7 +134,7 @@ router.get("/report", async (req, res) => {
       `SELECT a.activity_type, COUNT(*)::int AS count
        FROM activities a ${whereClause}
        GROUP BY a.activity_type ORDER BY count DESC`,
-      params
+      params,
     );
 
     // 3) By zone
@@ -135,7 +144,7 @@ router.get("/report", async (req, res) => {
        LEFT JOIN zones z ON a.zone_id = z.id
        ${whereClause}
        GROUP BY z.name ORDER BY count DESC`,
-      params
+      params,
     );
 
     // 4) By crop
@@ -145,7 +154,7 @@ router.get("/report", async (req, res) => {
        LEFT JOIN crops c ON a.crop_id = c.id
        ${whereClause}
        GROUP BY c.name ORDER BY count DESC`,
-      params
+      params,
     );
 
     // 5) By month
@@ -153,7 +162,7 @@ router.get("/report", async (req, res) => {
       `SELECT TO_CHAR(a.date, 'YYYY-MM') AS month, COUNT(*)::int AS count
        FROM activities a ${whereClause}
        GROUP BY month ORDER BY month`,
-      params
+      params,
     );
 
     // 6) Inputs used
@@ -168,7 +177,7 @@ router.get("/report", async (req, res) => {
        ${whereClause}
        GROUP BY i.name, i.type, ai.unit
        ORDER BY times_used DESC`,
-      params
+      params,
     );
 
     // 7) Worker participation
@@ -182,7 +191,7 @@ router.get("/report", async (req, res) => {
        ${whereClause}
        GROUP BY w.name
        ORDER BY tasks_assigned DESC`,
-      params
+      params,
     );
 
     // 8) Recent activities (latest 10)
@@ -196,7 +205,7 @@ router.get("/report", async (req, res) => {
        ${whereClause}
        ORDER BY a.date DESC, a.id DESC
        LIMIT 10`,
-      params
+      params,
     );
 
     res.json({

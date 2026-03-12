@@ -9,9 +9,7 @@ import { ChevronRight, ClipboardList } from "lucide-react";
 export default function NewActivityPage() {
   const router = useRouter();
 
-  const [date, setDate] = useState(() =>
-    new Date().toISOString().slice(0, 10)
-  );
+  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [farmId, setFarmId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [activityType, setActivityType] = useState("");
@@ -51,9 +49,8 @@ export default function NewActivityPage() {
   useEffect(() => {
     async function loadMaster() {
       try {
-        const userId = getCreatedBy();
         const [farmsRes, inputsRes, cropsRes] = await Promise.all([
-          apiGet("/farms", userId ? { owner_id: userId } : {}),
+          apiGet("/farms"), // owner resolved server-side from JWT
           apiGet("/inputs"),
           apiGet("/crops"),
         ]);
@@ -140,7 +137,7 @@ export default function NewActivityPage() {
     setSelectedWorkers((prev) =>
       prev.includes(workerId)
         ? prev.filter((id) => id !== workerId)
-        : [...prev, workerId]
+        : [...prev, workerId],
     );
   };
 
@@ -218,7 +215,9 @@ export default function NewActivityPage() {
             <div className="h-5 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
               <ClipboardList size={18} className="text-emerald-600" />
-              <h1 className="text-lg font-semibold text-gray-900">Log Activity</h1>
+              <h1 className="text-lg font-semibold text-gray-900">
+                Log Activity
+              </h1>
             </div>
           </div>
           <button
@@ -231,307 +230,311 @@ export default function NewActivityPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl p-5 sm:p-8">
-        <h2 className="text-2xl font-bold text-gray-800 text-center">Add Field Activity</h2>
-        <p className="text-sm text-gray-500 text-center mt-1">Record today&apos;s farm work and resources</p>
+        <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl p-5 sm:p-8">
+          <h2 className="text-2xl font-bold text-gray-800 text-center">
+            Add Field Activity
+          </h2>
+          <p className="text-sm text-gray-500 text-center mt-1">
+            Record today&apos;s farm work and resources
+          </p>
 
-        {/* Message Banner */}
-        {message.text && (
-          <div
-            className={`mt-4 text-sm text-center rounded-lg px-3 py-2 ${
-              message.type === "success"
-                ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
-                : "text-red-700 bg-red-50 border border-red-200"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
+          {/* Message Banner */}
+          {message.text && (
+            <div
+              className={`mt-4 text-sm text-center rounded-lg px-3 py-2 ${
+                message.type === "success"
+                  ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
+                  : "text-red-700 bg-red-50 border border-red-200"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-          {/* Basic info */}
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Date */}
+          <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+            {/* Basic info */}
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Farm */}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Farm <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={farmId}
+                  onChange={(e) => setFarmId(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Select farm</option>
+                  {farms.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Zone / Plot */}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Zone / Plot
+                </label>
+                <select
+                  value={zoneId}
+                  onChange={(e) => setZoneId(e.target.value)}
+                  disabled={!farmId}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500
+                           disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">
+                    {farmId ? "Select zone" : "Select a farm first"}
+                  </option>
+                  {zones.map((z) => (
+                    <option key={z.id} value={z.id}>
+                      {z.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Crop */}
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Crop (optional)
+                </label>
+                <select
+                  value={cropId}
+                  onChange={(e) => setCropId(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                >
+                  <option value="">Select crop</option>
+                  {crops.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Activity type */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Activity Type <span className="text-red-500">*</span>
+              </label>
+
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                {activityTypes.map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setActivityType(type)}
+                    className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg border-2 transition-all ${
+                      activityType === type
+                        ? "bg-emerald-50 border-emerald-500"
+                        : "bg-white border-gray-300 hover:border-emerald-500"
+                    }`}
+                  >
+                    <span className="text-2xl sm:text-3xl mb-2">
+                      {type === "sowing" && "🌱"}
+                      {type === "transplanting" && "🌾"}
+                      {type === "irrigation" && "💧"}
+                      {type === "pest_spray" && "🐛"}
+                      {type === "biofertilizer" && "🌿"}
+                      {type === "weeding" && "✂️"}
+                      {type === "harvest" && "🌾"}
+                      {type === "other" && "📋"}
+                    </span>
+                    <span className="text-xs font-medium text-gray-700 capitalize">
+                      {type.replace("_", " ")}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Inputs */}
+            <div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                <label className="block text-sm font-medium text-gray-600">
+                  Inputs Used
+                </label>
+                <button
+                  type="button"
+                  onClick={addInputRow}
+                  className="text-xs text-emerald-600 hover:text-emerald-800 cursor-pointer"
+                >
+                  + Add another input
+                </button>
+              </div>
+              <div className="space-y-4">
+                {inputs.map((row, idx) => (
+                  <div
+                    key={idx}
+                    className="grid md:grid-cols-4 gap-3 bg-gray-50 rounded-xl p-3 relative"
+                  >
+                    {/* Remove button */}
+                    {inputs.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeInputRow(idx)}
+                        className="absolute top-2 right-2 md:-top-2 md:-right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full text-xs
+                                 flex items-center justify-center hover:bg-red-200 transition cursor-pointer"
+                        title="Remove input"
+                      >
+                        ✕
+                      </button>
+                    )}
+
+                    {/* Input used */}
+                    <select
+                      value={row.input_id}
+                      onChange={(e) =>
+                        handleInputChange(idx, "input_id", e.target.value)
+                      }
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 bg-white"
+                    >
+                      <option value="">Input used</option>
+                      {availableInputs.map((inp) => (
+                        <option key={inp.id} value={inp.id}>
+                          {inp.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Quantity */}
+                    <input
+                      type="number"
+                      value={row.quantity}
+                      onChange={(e) =>
+                        handleInputChange(idx, "quantity", e.target.value)
+                      }
+                      placeholder="Qty"
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 placeholder:text-gray-400 bg-white"
+                    />
+
+                    {/* Unit */}
+                    <input
+                      value={row.unit}
+                      onChange={(e) =>
+                        handleInputChange(idx, "unit", e.target.value)
+                      }
+                      placeholder="Unit (kg/L)"
+                      className="rounded-lg border border-gray-300 px-3 py-2 text-sm
+                               text-gray-900 placeholder:text-gray-400 bg-white"
+                    />
+
+                    {/* Method */}
+                    <div>
+                      <select
+                        value={row.method}
+                        onChange={(e) =>
+                          handleInputChange(idx, "method", e.target.value)
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
+                                 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="">Method</option>
+                        <option value="manual_spraying">Manual Spraying</option>
+                        <option value="drip_irrigation">Drip Irrigation</option>
+                        <option value="broadcasting">Broadcasting</option>
+                        <option value="manual_sowing">Manual Sowing</option>
+                      </select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Workers */}
+            <div>
+              <label className="block text-sm font-medium text-gray-600 mb-2">
+                Workers involved
+              </label>
+              {!farmId ? (
+                <p className="text-sm text-gray-400 italic">
+                  Select a farm to see available workers
+                </p>
+              ) : workers.length === 0 ? (
+                <p className="text-sm text-gray-400 italic">
+                  No workers found for this farm
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {workers.map((w) => {
+                    const active = selectedWorkers.includes(w.id);
+                    return (
+                      <button
+                        key={w.id}
+                        type="button"
+                        onClick={() => toggleWorker(w.id)}
+                        className={`px-3 py-1 rounded-full text-xs border ${
+                          active
+                            ? "bg-emerald-500 text-white border-emerald-500"
+                            : "bg-gray-50 text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        {w.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Remarks */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
-                Date <span className="text-red-500">*</span>
+                Remarks
               </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+              <textarea
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                rows={3}
+                placeholder="Soil moisture, uniform emergence, pest spray only for tomato..."
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                         text-gray-900 placeholder:text-gray-400 bg-white
+                         focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
-            {/* Farm */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Farm <span className="text-red-500">*</span>
-              </label>
-              <select
-                value={farmId}
-                onChange={(e) => setFarmId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">Select farm</option>
-                {farms.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {f.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Zone / Plot */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Zone / Plot
-              </label>
-              <select
-                value={zoneId}
-                onChange={(e) => setZoneId(e.target.value)}
-                disabled={!farmId}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500
-                           disabled:bg-gray-100 disabled:cursor-not-allowed"
-              >
-                <option value="">
-                  {farmId ? "Select zone" : "Select a farm first"}
-                </option>
-                {zones.map((z) => (
-                  <option key={z.id} value={z.id}>
-                    {z.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Crop */}
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Crop (optional)
-              </label>
-              <select
-                value={cropId}
-                onChange={(e) => setCropId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              >
-                <option value="">Select crop</option>
-                {crops.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Activity type */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Activity Type <span className="text-red-500">*</span>
-            </label>
-
-            <div className="grid grid-cols-2 gap-2 sm:gap-3">
-              {activityTypes.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => setActivityType(type)}
-                  className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg border-2 transition-all ${
-                    activityType === type
-                      ? "bg-emerald-50 border-emerald-500"
-                      : "bg-white border-gray-300 hover:border-emerald-500"
-                  }`}
-                >
-                  <span className="text-2xl sm:text-3xl mb-2">
-                    {type === "sowing" && "🌱"}
-                    {type === "transplanting" && "🌾"}
-                    {type === "irrigation" && "💧"}
-                    {type === "pest_spray" && "🐛"}
-                    {type === "biofertilizer" && "🌿"}
-                    {type === "weeding" && "✂️"}
-                    {type === "harvest" && "🌾"}
-                    {type === "other" && "📋"}
-                  </span>
-                  <span className="text-xs font-medium text-gray-700 capitalize">
-                    {type.replace("_", " ")}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Inputs */}
-          <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
-              <label className="block text-sm font-medium text-gray-600">
-                Inputs Used
-              </label>
+            {/* Submit */}
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
               <button
                 type="button"
-                onClick={addInputRow}
-                className="text-xs text-emerald-600 hover:text-emerald-800 cursor-pointer"
+                onClick={() => router.push("/farmer/dashboard")}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
               >
-                + Add another input
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full sm:w-auto px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
+              >
+                {loading ? "Saving..." : "Save Activity"}
               </button>
             </div>
-            <div className="space-y-4">
-              {inputs.map((row, idx) => (
-                <div
-                  key={idx}
-                  className="grid md:grid-cols-4 gap-3 bg-gray-50 rounded-xl p-3 relative"
-                >
-                  {/* Remove button */}
-                  {inputs.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeInputRow(idx)}
-                      className="absolute top-2 right-2 md:-top-2 md:-right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full text-xs
-                                 flex items-center justify-center hover:bg-red-200 transition cursor-pointer"
-                      title="Remove input"
-                    >
-                      ✕
-                    </button>
-                  )}
-
-                  {/* Input used */}
-                  <select
-                    value={row.input_id}
-                    onChange={(e) =>
-                      handleInputChange(idx, "input_id", e.target.value)
-                    }
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
-                               text-gray-900 bg-white"
-                  >
-                    <option value="">Input used</option>
-                    {availableInputs.map((inp) => (
-                      <option key={inp.id} value={inp.id}>
-                        {inp.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Quantity */}
-                  <input
-                    type="number"
-                    value={row.quantity}
-                    onChange={(e) =>
-                      handleInputChange(idx, "quantity", e.target.value)
-                    }
-                    placeholder="Qty"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
-                               text-gray-900 placeholder:text-gray-400 bg-white"
-                  />
-
-                  {/* Unit */}
-                  <input
-                    value={row.unit}
-                    onChange={(e) =>
-                      handleInputChange(idx, "unit", e.target.value)
-                    }
-                    placeholder="Unit (kg/L)"
-                    className="rounded-lg border border-gray-300 px-3 py-2 text-sm
-                               text-gray-900 placeholder:text-gray-400 bg-white"
-                  />
-
-                  {/* Method */}
-                  <div>
-                    <select
-                      value={row.method}
-                      onChange={(e) =>
-                        handleInputChange(idx, "method", e.target.value)
-                      }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                                 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    >
-                      <option value="">Method</option>
-                      <option value="manual_spraying">Manual Spraying</option>
-                      <option value="drip_irrigation">Drip Irrigation</option>
-                      <option value="broadcasting">Broadcasting</option>
-                      <option value="manual_sowing">Manual Sowing</option>
-                    </select>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Workers */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-2">
-              Workers involved
-            </label>
-            {!farmId ? (
-              <p className="text-sm text-gray-400 italic">
-                Select a farm to see available workers
-              </p>
-            ) : workers.length === 0 ? (
-              <p className="text-sm text-gray-400 italic">
-                No workers found for this farm
-              </p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {workers.map((w) => {
-                  const active = selectedWorkers.includes(w.id);
-                  return (
-                    <button
-                      key={w.id}
-                      type="button"
-                      onClick={() => toggleWorker(w.id)}
-                      className={`px-3 py-1 rounded-full text-xs border ${
-                        active
-                          ? "bg-emerald-500 text-white border-emerald-500"
-                          : "bg-gray-50 text-gray-700 border-gray-300"
-                      }`}
-                    >
-                      {w.name}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Remarks */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Remarks
-            </label>
-            <textarea
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              rows={3}
-              placeholder="Soil moisture, uniform emergence, pest spray only for tomato..."
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                         text-gray-900 placeholder:text-gray-400 bg-white
-                         focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          {/* Submit */}
-          <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => router.push("/farmer/dashboard")}
-              className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full sm:w-auto px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
-            >
-              {loading ? "Saving..." : "Save Activity"}
-            </button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
       </main>
     </div>
   );

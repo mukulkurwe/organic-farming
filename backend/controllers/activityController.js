@@ -12,10 +12,38 @@ export const createActivity = async (req, res) => {
       activity_type,
       crop_id,
       remarks,
-      created_by,
       inputs = [],
       workers = [],
     } = req.body;
+    const created_by = req.user?.userId;
+
+    if (!created_by) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const farmOwnership = await client.query(
+      `SELECT id FROM farms WHERE id = $1 AND owner_id = $2`,
+      [farm_id, created_by],
+    );
+
+    if (farmOwnership.rowCount === 0) {
+      return res
+        .status(403)
+        .json({ message: "You do not have access to this farm" });
+    }
+
+    if (zone_id) {
+      const zoneOwnership = await client.query(
+        `SELECT id FROM zones WHERE id = $1 AND farm_id = $2`,
+        [zone_id, farm_id],
+      );
+
+      if (zoneOwnership.rowCount === 0) {
+        return res
+          .status(400)
+          .json({ message: "Selected zone does not belong to this farm" });
+      }
+    }
 
     await client.query("BEGIN");
 
@@ -24,7 +52,15 @@ export const createActivity = async (req, res) => {
        (farm_id, zone_id, date, activity_type, crop_id, remarks, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        RETURNING *`,
-      [farm_id, zone_id, date, activity_type, crop_id || null, remarks || null, created_by]
+      [
+        farm_id,
+        zone_id,
+        date,
+        activity_type,
+        crop_id || null,
+        remarks || null,
+        created_by,
+      ],
     );
 
     const activity = activityResult.rows[0];
@@ -35,7 +71,7 @@ export const createActivity = async (req, res) => {
       await client.query(
         `INSERT INTO activity_inputs (activity_id, input_id, quantity, unit, method)
          VALUES ($1,$2,$3,$4,$5)`,
-        [activity.id, input_id, quantity, unit, method]
+        [activity.id, input_id, quantity, unit, method],
       );
     }
 
@@ -45,7 +81,7 @@ export const createActivity = async (req, res) => {
       await client.query(
         `INSERT INTO activity_workers (activity_id, worker_id, hours)
          VALUES ($1,$2,$3)`,
-        [activity.id, worker_id, hours || null]
+        [activity.id, worker_id, hours || null],
       );
     }
 
@@ -63,18 +99,16 @@ export const createActivity = async (req, res) => {
 // GET /api/activities?farm_id=&date=&from=&to=&zone_id=&activity_type=&worker_id=
 export const getActivities = async (req, res) => {
   try {
-    const {
-      farm_id,
-      date,
-      from,
-      to,
-      zone_id,
-      activity_type,
-      worker_id,
-    } = req.query;
+    const { farm_id, date, from, to, zone_id, activity_type, worker_id } =
+      req.query;
 
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM farms f_scope WHERE f_scope.id = a.farm_id AND f_scope.owner_id = $${params.length})`,
+    );
 
     if (farm_id) {
       params.push(farm_id);
@@ -87,7 +121,9 @@ export const getActivities = async (req, res) => {
     if (from && to) {
       params.push(from);
       params.push(to);
-      conditions.push(`a.date BETWEEN $${params.length - 1} AND $${params.length}`);
+      conditions.push(
+        `a.date BETWEEN $${params.length - 1} AND $${params.length}`,
+      );
     }
     if (zone_id) {
       params.push(zone_id);
@@ -100,11 +136,13 @@ export const getActivities = async (req, res) => {
     if (worker_id) {
       params.push(worker_id);
       conditions.push(
-        `EXISTS (SELECT 1 FROM activity_workers aw WHERE aw.activity_id = a.id AND aw.worker_id = $${params.length})`
+        `EXISTS (SELECT 1 FROM activity_workers aw WHERE aw.activity_id = a.id AND aw.worker_id = $${params.length})`,
       );
     }
 
-    const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
 
     const result = await pool.query(
       `SELECT a.*, z.name AS zone_name, c.name AS crop_name
@@ -113,7 +151,7 @@ export const getActivities = async (req, res) => {
        LEFT JOIN crops c ON a.crop_id = c.id
        ${whereClause}
        ORDER BY a.date DESC, a.id DESC`,
-      params
+      params,
     );
 
     res.json(result.rows);
@@ -131,6 +169,11 @@ export const getCalendarAgg = async (req, res) => {
     const conditions = [];
     const params = [];
 
+    params.push(req.user.userId);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM farms f_scope WHERE f_scope.id = a.farm_id AND f_scope.owner_id = $${params.length})`,
+    );
+
     if (farm_id) {
       params.push(farm_id);
       conditions.push(`a.farm_id = $${params.length}`);
@@ -138,7 +181,9 @@ export const getCalendarAgg = async (req, res) => {
     if (from && to) {
       params.push(from);
       params.push(to);
-      conditions.push(`a.date BETWEEN $${params.length - 1} AND $${params.length}`);
+      conditions.push(
+        `a.date BETWEEN $${params.length - 1} AND $${params.length}`,
+      );
     }
     if (zone_id) {
       params.push(zone_id);
@@ -151,11 +196,13 @@ export const getCalendarAgg = async (req, res) => {
     if (worker_id) {
       params.push(worker_id);
       conditions.push(
-        `EXISTS (SELECT 1 FROM activity_workers aw WHERE aw.activity_id = a.id AND aw.worker_id = $${params.length})`
+        `EXISTS (SELECT 1 FROM activity_workers aw WHERE aw.activity_id = a.id AND aw.worker_id = $${params.length})`,
       );
     }
 
-    const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
 
     const result = await pool.query(
       `SELECT
@@ -173,7 +220,7 @@ export const getCalendarAgg = async (req, res) => {
        ) a
        GROUP BY a.date
        ORDER BY a.date`,
-      params
+      params,
     );
 
     res.json(result.rows);

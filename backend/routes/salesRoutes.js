@@ -1,6 +1,7 @@
 // backend/routes/salesRoutes.js
 import express from "express";
 import pool from "../config/db.js";
+import { authenticate } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -9,11 +10,9 @@ const router = express.Router();
 ================================================ */
 
 // GET /api/sales/buyers
-router.get("/buyers", async (req, res) => {
+router.get("/buyers", authenticate, async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM buyers ORDER BY name ASC"
-    );
+    const result = await pool.query("SELECT * FROM buyers ORDER BY name ASC");
     res.json(result.rows);
   } catch (err) {
     console.error("GET /sales/buyers error:", err.message);
@@ -22,7 +21,7 @@ router.get("/buyers", async (req, res) => {
 });
 
 // POST /api/sales/buyers
-router.post("/buyers", async (req, res) => {
+router.post("/buyers", authenticate, async (req, res) => {
   try {
     const { name, phone, location, buyer_type } = req.body;
     if (!name || !name.trim()) {
@@ -31,7 +30,7 @@ router.post("/buyers", async (req, res) => {
     const result = await pool.query(
       `INSERT INTO buyers (name, phone, location, buyer_type)
        VALUES ($1, $2, $3, $4) RETURNING *`,
-      [name.trim(), phone || null, location || null, buyer_type || "retail"]
+      [name.trim(), phone || null, location || null, buyer_type || "retail"],
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -41,11 +40,11 @@ router.post("/buyers", async (req, res) => {
 });
 
 // DELETE /api/sales/buyers/:id
-router.delete("/buyers/:id", async (req, res) => {
+router.delete("/buyers/:id", authenticate, async (req, res) => {
   try {
     const result = await pool.query(
       "DELETE FROM buyers WHERE id = $1 RETURNING *",
-      [req.params.id]
+      [req.params.id],
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Buyer not found" });
@@ -62,11 +61,14 @@ router.delete("/buyers/:id", async (req, res) => {
 ================================================ */
 
 // GET /api/sales/listings?farm_id=&status=
-router.get("/listings", async (req, res) => {
+router.get("/listings", authenticate, async (req, res) => {
   try {
     const { farm_id, status } = req.query;
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(`f.owner_id = $${params.length}`);
 
     if (farm_id) {
       params.push(farm_id);
@@ -86,7 +88,7 @@ router.get("/listings", async (req, res) => {
        LEFT JOIN crops c ON pl.crop_id = c.id
        ${where}
        ORDER BY pl.created_at DESC`,
-      params
+      params,
     );
     res.json(result.rows);
   } catch (err) {
@@ -96,7 +98,7 @@ router.get("/listings", async (req, res) => {
 });
 
 // POST /api/sales/listings
-router.post("/listings", async (req, res) => {
+router.post("/listings", authenticate, async (req, res) => {
   try {
     const {
       farm_id,
@@ -107,13 +109,31 @@ router.post("/listings", async (req, res) => {
       unit,
       harvest_date,
       notes,
-      created_by,
     } = req.body;
 
-    if (!farm_id) return res.status(400).json({ message: "farm_id is required" });
-    if (!crop_name || !crop_name.trim()) return res.status(400).json({ message: "Crop name is required" });
-    if (!quantity_kg || quantity_kg <= 0) return res.status(400).json({ message: "Quantity must be greater than 0" });
-    if (!price_per_kg || price_per_kg <= 0) return res.status(400).json({ message: "Price must be greater than 0" });
+    const created_by = req.user?.userId;
+
+    if (!farm_id)
+      return res.status(400).json({ message: "farm_id is required" });
+    if (!crop_name || !crop_name.trim())
+      return res.status(400).json({ message: "Crop name is required" });
+    if (!quantity_kg || quantity_kg <= 0)
+      return res
+        .status(400)
+        .json({ message: "Quantity must be greater than 0" });
+    if (!price_per_kg || price_per_kg <= 0)
+      return res.status(400).json({ message: "Price must be greater than 0" });
+
+    const farmCheck = await pool.query(
+      `SELECT id FROM farms WHERE id = $1 AND owner_id = $2`,
+      [farm_id, created_by],
+    );
+
+    if (farmCheck.rowCount === 0) {
+      return res
+        .status(403)
+        .json({ message: "You do not have access to this farm" });
+    }
 
     const result = await pool.query(
       `INSERT INTO produce_listings
@@ -130,7 +150,7 @@ router.post("/listings", async (req, res) => {
         harvest_date || null,
         notes || null,
         created_by || null,
-      ]
+      ],
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -140,10 +160,22 @@ router.post("/listings", async (req, res) => {
 });
 
 // PATCH /api/sales/listings/:id
-router.patch("/listings/:id", async (req, res) => {
+router.patch("/listings/:id", authenticate, async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity_available, price_per_kg, status, notes } = req.body;
+
+    const listingCheck = await pool.query(
+      `SELECT pl.id
+       FROM produce_listings pl
+       JOIN farms f ON pl.farm_id = f.id
+       WHERE pl.id = $1 AND f.owner_id = $2`,
+      [id, req.user.userId],
+    );
+
+    if (listingCheck.rowCount === 0) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
 
     const result = await pool.query(
       `UPDATE produce_listings
@@ -154,7 +186,13 @@ router.patch("/listings/:id", async (req, res) => {
          notes              = COALESCE($4, notes)
        WHERE id = $5
        RETURNING *`,
-      [quantity_available ?? null, price_per_kg ?? null, status ?? null, notes ?? null, id]
+      [
+        quantity_available ?? null,
+        price_per_kg ?? null,
+        status ?? null,
+        notes ?? null,
+        id,
+      ],
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Listing not found" });
@@ -167,11 +205,23 @@ router.patch("/listings/:id", async (req, res) => {
 });
 
 // DELETE /api/sales/listings/:id
-router.delete("/listings/:id", async (req, res) => {
+router.delete("/listings/:id", authenticate, async (req, res) => {
   try {
+    const listingCheck = await pool.query(
+      `SELECT pl.id
+       FROM produce_listings pl
+       JOIN farms f ON pl.farm_id = f.id
+       WHERE pl.id = $1 AND f.owner_id = $2`,
+      [req.params.id, req.user.userId],
+    );
+
+    if (listingCheck.rowCount === 0) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+
     const result = await pool.query(
       "DELETE FROM produce_listings WHERE id = $1 RETURNING *",
-      [req.params.id]
+      [req.params.id],
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Listing not found" });
@@ -188,11 +238,14 @@ router.delete("/listings/:id", async (req, res) => {
 ================================================ */
 
 // GET /api/sales/transactions?farm_id=&from=&to=
-router.get("/transactions", async (req, res) => {
+router.get("/transactions", authenticate, async (req, res) => {
   try {
     const { farm_id, from, to } = req.query;
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(`f.owner_id = $${params.length}`);
 
     if (farm_id) {
       params.push(farm_id);
@@ -220,7 +273,7 @@ router.get("/transactions", async (req, res) => {
        LEFT JOIN produce_listings pl ON st.listing_id = pl.id
        ${where}
        ORDER BY st.sale_date DESC, st.id DESC`,
-      params
+      params,
     );
     res.json(result.rows);
   } catch (err) {
@@ -230,7 +283,7 @@ router.get("/transactions", async (req, res) => {
 });
 
 // POST /api/sales/transactions
-router.post("/transactions", async (req, res) => {
+router.post("/transactions", authenticate, async (req, res) => {
   const client = await pool.connect();
   try {
     const {
@@ -244,13 +297,31 @@ router.post("/transactions", async (req, res) => {
       payment_status,
       sale_date,
       notes,
-      created_by,
     } = req.body;
 
-    if (!farm_id) return res.status(400).json({ message: "farm_id is required" });
-    if (!quantity_sold || quantity_sold <= 0) return res.status(400).json({ message: "Quantity must be greater than 0" });
-    if (!price_per_unit || price_per_unit <= 0) return res.status(400).json({ message: "Price must be greater than 0" });
-    if (!sale_date) return res.status(400).json({ message: "Sale date is required" });
+    const created_by = req.user?.userId;
+
+    if (!farm_id)
+      return res.status(400).json({ message: "farm_id is required" });
+    if (!quantity_sold || quantity_sold <= 0)
+      return res
+        .status(400)
+        .json({ message: "Quantity must be greater than 0" });
+    if (!price_per_unit || price_per_unit <= 0)
+      return res.status(400).json({ message: "Price must be greater than 0" });
+    if (!sale_date)
+      return res.status(400).json({ message: "Sale date is required" });
+
+    const farmCheck = await client.query(
+      `SELECT id FROM farms WHERE id = $1 AND owner_id = $2`,
+      [farm_id, created_by],
+    );
+
+    if (farmCheck.rowCount === 0) {
+      return res
+        .status(403)
+        .json({ message: "You do not have access to this farm" });
+    }
 
     const total_amount = Number(quantity_sold) * Number(price_per_unit);
 
@@ -259,12 +330,22 @@ router.post("/transactions", async (req, res) => {
     // If linked to a listing, reduce available quantity
     if (listing_id) {
       const listing = await client.query(
-        "SELECT quantity_available FROM produce_listings WHERE id = $1 FOR UPDATE",
-        [listing_id]
+        `SELECT pl.quantity_available, pl.farm_id, pl.unit
+         FROM produce_listings pl
+         JOIN farms f ON pl.farm_id = f.id
+         WHERE pl.id = $1 AND f.owner_id = $2
+         FOR UPDATE`,
+        [listing_id, created_by],
       );
       if (listing.rows.length === 0) {
         await client.query("ROLLBACK");
         return res.status(404).json({ message: "Listing not found" });
+      }
+      if (Number(listing.rows[0].farm_id) !== Number(farm_id)) {
+        await client.query("ROLLBACK");
+        return res
+          .status(400)
+          .json({ message: "Listing does not belong to the selected farm" });
       }
       const available = Number(listing.rows[0].quantity_available);
       if (quantity_sold > available) {
@@ -279,14 +360,16 @@ router.post("/transactions", async (req, res) => {
          SET quantity_available = $1,
              status = CASE WHEN $1::numeric <= 0 THEN 'sold' ELSE status END
          WHERE id = $2`,
-        [newAvailable, listing_id]
+        [newAvailable, listing_id],
       );
     }
 
     // Resolve buyer name
     let resolvedBuyerName = buyer_name || null;
     if (buyer_id && !resolvedBuyerName) {
-      const bRes = await client.query("SELECT name FROM buyers WHERE id = $1", [buyer_id]);
+      const bRes = await client.query("SELECT name FROM buyers WHERE id = $1", [
+        buyer_id,
+      ]);
       if (bRes.rows.length > 0) resolvedBuyerName = bRes.rows[0].name;
     }
 
@@ -309,7 +392,7 @@ router.post("/transactions", async (req, res) => {
         sale_date,
         notes || null,
         created_by || null,
-      ]
+      ],
     );
 
     await client.query("COMMIT");
@@ -328,11 +411,16 @@ router.post("/transactions", async (req, res) => {
 ================================================ */
 
 // GET /api/sales/report?farm_id=&from=&to=
-router.get("/report", async (req, res) => {
+router.get("/report", authenticate, async (req, res) => {
   try {
     const { farm_id, from, to } = req.query;
     const conditions = [];
     const params = [];
+
+    params.push(req.user.userId);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM farms f_scope WHERE f_scope.id = st.farm_id AND f_scope.owner_id = $${params.length})`,
+    );
 
     if (farm_id) {
       params.push(farm_id);
@@ -358,7 +446,7 @@ router.get("/report", async (req, res) => {
              COALESCE(SUM(st.quantity_sold), 0)::numeric AS total_quantity_sold,
              COALESCE(AVG(st.price_per_unit), 0)::numeric AS avg_price_per_unit
            FROM sales_transactions st ${where}`,
-          params
+          params,
         ),
         pool.query(
           `SELECT TO_CHAR(st.sale_date, 'YYYY-MM') AS month,
@@ -366,7 +454,7 @@ router.get("/report", async (req, res) => {
                   COALESCE(SUM(st.total_amount), 0)::numeric AS revenue
            FROM sales_transactions st ${where}
            GROUP BY month ORDER BY month`,
-          params
+          params,
         ),
         pool.query(
           `SELECT COALESCE(pl.crop_name, 'Unknown') AS crop,
@@ -376,7 +464,7 @@ router.get("/report", async (req, res) => {
            LEFT JOIN produce_listings pl ON st.listing_id = pl.id
            ${where}
            GROUP BY crop ORDER BY revenue DESC LIMIT 10`,
-          params
+          params,
         ),
         pool.query(
           `SELECT COALESCE(b.buyer_type, 'unknown') AS buyer_type,
@@ -386,7 +474,7 @@ router.get("/report", async (req, res) => {
            LEFT JOIN buyers b ON st.buyer_id = b.id
            ${where}
            GROUP BY buyer_type ORDER BY revenue DESC`,
-          params
+          params,
         ),
         pool.query(
           `SELECT st.payment_status,
@@ -394,7 +482,7 @@ router.get("/report", async (req, res) => {
                   COALESCE(SUM(st.total_amount), 0)::numeric AS amount
            FROM sales_transactions st ${where}
            GROUP BY st.payment_status`,
-          params
+          params,
         ),
       ]);
 
