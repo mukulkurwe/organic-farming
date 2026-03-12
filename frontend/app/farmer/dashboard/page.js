@@ -96,12 +96,12 @@ export default function FarmerDashboard() {
             </div>
             <div>
               <h1 className="text-base font-bold text-gray-900 leading-none">Farmer Dashboard</h1>
-              <p className="text-xs text-gray-500 mt-0.5">Welcome back, {user?.name || "Farmer"}</p>
+              <p className="text-xs text-gray-600 mt-0.5">Welcome back, {user?.name || "Farmer"}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200 rounded-lg transition cursor-pointer"
           >
             <LogOut size={15} />
             Logout
@@ -113,33 +113,33 @@ export default function FarmerDashboard() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Account Card */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Account Information</h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Account Information</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg"><User size={16} className="text-gray-500" /></div>
+              <div className="p-2 bg-gray-100 rounded-lg"><User size={16} className="text-gray-600" /></div>
               <div>
-                <p className="text-xs text-gray-400">Name</p>
+                <p className="text-xs text-gray-500">Name</p>
                 <p className="text-sm font-semibold text-gray-800">{user?.name}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg"><Phone size={16} className="text-gray-500" /></div>
+              <div className="p-2 bg-gray-100 rounded-lg"><Phone size={16} className="text-gray-600" /></div>
               <div>
-                <p className="text-xs text-gray-400">Phone</p>
+                <p className="text-xs text-gray-500">Phone</p>
                 <p className="text-sm font-semibold text-gray-800">{user?.phone}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-emerald-50 rounded-lg"><BadgeCheck size={16} className="text-emerald-600" /></div>
               <div>
-                <p className="text-xs text-gray-400">Role</p>
+                <p className="text-xs text-gray-500">Role</p>
                 <p className="text-sm font-semibold text-emerald-700 capitalize">{user?.role}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg"><Clock4 size={16} className="text-gray-500" /></div>
+              <div className="p-2 bg-gray-100 rounded-lg"><Clock4 size={16} className="text-gray-600" /></div>
               <div>
-                <p className="text-xs text-gray-400">Member Since</p>
+                <p className="text-xs text-gray-500">Member Since</p>
                 <p className="text-sm font-semibold text-gray-800">
                   {user?.created_at ? new Date(user.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "N/A"}
                 </p>
@@ -150,7 +150,7 @@ export default function FarmerDashboard() {
 
         {/* Quick Actions */}
         <div>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Quick Actions</h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Quick Actions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
               { label: "Create Farm",     desc: "Add a new farm",               icon: Home,         path: "/farmer/create-farm",    color: "text-emerald-600", bg: "bg-emerald-50" },
@@ -162,12 +162,12 @@ export default function FarmerDashboard() {
               { label: "Demand Board",    desc: "Browse live buyer requests",   icon: Package,       path: "/farmer/demand-board",   color: "text-indigo-600",  bg: "bg-indigo-50" },
             ].map(({ label, desc, icon: Icon, path, color, bg }) => (
               <button key={path} onClick={() => router.push(path)}
-                className="bg-white border border-gray-200 rounded-2xl p-5 text-left hover:shadow-md hover:border-gray-300 transition group">
+                className="bg-white border border-gray-200 rounded-2xl p-5 text-left hover:shadow-md hover:border-gray-300 transition group cursor-pointer">
                 <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3`}>
                   <Icon size={20} className={color} />
                 </div>
                 <h3 className="text-sm font-semibold text-gray-800 group-hover:text-gray-900">{label}</h3>
-                <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
               </button>
             ))}
           </div>
@@ -176,9 +176,9 @@ export default function FarmerDashboard() {
         {/* My Farms */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">My Farms</h2>
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">My Farms</h2>
             <button onClick={() => router.push("/farmer/create-farm")}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition cursor-pointer">
               <Plus size={13} /> Add Farm
             </button>
           </div>
@@ -190,12 +190,12 @@ export default function FarmerDashboard() {
           ) : farms.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center">
               <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Home size={24} className="text-gray-400" />
+                <Home size={24} className="text-gray-500" />
               </div>
               <p className="font-semibold text-gray-700">No farms yet</p>
-              <p className="text-sm text-gray-400 mt-1">Create your first farm to start managing operations</p>
+              <p className="text-sm text-gray-500 mt-1">Create your first farm to start managing operations</p>
               <button onClick={() => router.push("/farmer/create-farm")}
-                className="mt-4 px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition">
+                className="mt-4 px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition cursor-pointer">
                 Create Your First Farm
               </button>
             </div>
@@ -216,20 +216,20 @@ export default function FarmerDashboard() {
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-1">
-                    <MapPin size={13} className="text-gray-400" />
+                  <div className="flex items-center gap-1.5 text-sm text-gray-600 mb-1">
+                    <MapPin size={13} className="text-gray-500" />
                     {farm.location || "No location set"}
                   </div>
-                  <p className="text-xs text-gray-400 mb-4">
+                  <p className="text-xs text-gray-500 mb-4">
                     Created {farm.created_at ? new Date(farm.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "—"}
                   </p>
                   <div className="flex gap-2">
                     <button onClick={() => router.push(`/farm/${farm.id}/map`)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition">
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-emerald-200 text-emerald-700 hover:bg-emerald-50 transition cursor-pointer">
                       <Map size={13} /> Map
                     </button>
                     <button onClick={() => router.push(`/farm/${farm.id}/plots`)}
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition">
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-blue-200 text-blue-700 hover:bg-blue-50 transition cursor-pointer">
                       <Grid size={13} /> Plots
                     </button>
                   </div>
@@ -241,7 +241,7 @@ export default function FarmerDashboard() {
 
         {/* Features */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Platform Features</h2>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Platform Features</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               { title: "Land Mapping",       desc: "Draw and manage farm boundaries" },
@@ -251,9 +251,9 @@ export default function FarmerDashboard() {
               { title: "Weather Alerts",      desc: "Get weather-based recommendations" },
               { title: "Reports & Analytics", desc: "View insights and trends" },
             ].map(({ title, desc }) => (
-              <div key={title} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
+              <div key={title} className="border border-gray-100 rounded-xl p-4 bg-gray-50 cursor-pointer">
                 <h3 className="text-sm font-semibold text-gray-800 mb-1">{title}</h3>
-                <p className="text-xs text-gray-500">{desc}</p>
+                <p className="text-xs text-gray-600">{desc}</p>
               </div>
             ))}
           </div>
