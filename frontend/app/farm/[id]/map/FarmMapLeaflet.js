@@ -63,7 +63,7 @@ export default function FarmMapLeaflet() {
   };
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow bg-gradient-to-br from-green-100 via-green-200 to-green-300">
+    <div className="bg-white p-4 rounded-xl shadow bg-linear-to-br from-green-100 via-green-200 to-green-300">
       <p className="text-gray-600 mb-4 text-3xl">
         Draw your farm boundary. After saving, you&apos;ll assign plots inside it.
       </p>
