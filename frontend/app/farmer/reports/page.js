@@ -10,7 +10,7 @@ function Bar({ label, value, max, color = "bg-green-500" }) {
   const pct = max > 0 ? (value / max) * 100 : 0;
   return (
     <div className="flex items-center gap-3 text-sm">
-      <span className="w-32 text-gray-700 truncate" title={label}>
+      <span className="w-20 sm:w-32 text-gray-700 truncate" title={label}>
         {label}
       </span>
       <div className="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
@@ -19,7 +19,7 @@ function Bar({ label, value, max, color = "bg-green-500" }) {
           style={{ width: `${pct}%`, minWidth: value > 0 ? "1.5rem" : 0 }}
         />
       </div>
-      <span className="w-8 text-right font-medium text-gray-800">{value}</span>
+      <span className="w-6 sm:w-8 text-right font-medium text-gray-800">{value}</span>
     </div>
   );
 }
@@ -98,8 +98,8 @@ export default function ReportsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => router.push("/farmer/dashboard")}
               className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
@@ -114,7 +114,7 @@ export default function ReportsPage() {
           </div>
           <button
             onClick={() => router.push("/farmer/dashboard")}
-            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer w-full sm:w-auto"
           >
             Dashboard
           </button>
@@ -124,14 +124,14 @@ export default function ReportsPage() {
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex flex-wrap items-end gap-4">
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="block text-xs font-medium text-gray-600 mb-1">
               Farm
             </label>
             <select
               value={farmId}
               onChange={(e) => setFarmId(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full sm:w-auto rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
             >
               <option value="">All Farms</option>
               {farms.map((f) => (
@@ -142,7 +142,7 @@ export default function ReportsPage() {
             </select>
           </div>
 
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="block text-xs font-medium text-gray-600 mb-1">
               From
             </label>
@@ -150,11 +150,11 @@ export default function ReportsPage() {
               type="date"
               value={from}
               onChange={(e) => setFrom(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full sm:w-auto rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
-          <div>
+          <div className="w-full sm:w-auto">
             <label className="block text-xs font-medium text-gray-600 mb-1">
               To
             </label>
@@ -162,14 +162,14 @@ export default function ReportsPage() {
               type="date"
               value={to}
               onChange={(e) => setTo(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="w-full sm:w-auto rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
           <button
             onClick={fetchReport}
             disabled={loading}
-            className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
           >
             {loading ? "Loading..." : "Generate Report"}
           </button>
@@ -249,7 +249,7 @@ export default function ReportsPage() {
                           <span className="text-xl w-8 text-center">
                             {ACTIVITY_EMOJI[row.activity_type] || "📋"}
                           </span>
-                          <span className="w-28 text-gray-700 capitalize truncate">
+                          <span className="w-20 sm:w-28 text-gray-700 capitalize truncate">
                             {row.activity_type.replace(/_/g, " ")}
                           </span>
                           <div className="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">

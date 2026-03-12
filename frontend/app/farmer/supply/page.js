@@ -77,8 +77,8 @@ function AddForecastModal({ farms, crops, user, onClose, onCreated }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 px-4 py-6">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <Sprout size={18} className="text-emerald-600" />
@@ -110,7 +110,7 @@ function AddForecastModal({ farms, crops, user, onClose, onCreated }) {
             <datalist id="crop-list">{crops.map(c => <option key={c.id} value={c.name} />)}</datalist>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Est. Quantity <span className="text-red-500">*</span></label>
               <div className="flex gap-2">
@@ -140,7 +140,7 @@ function AddForecastModal({ farms, crops, user, onClose, onCreated }) {
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" />
           </div>
 
-          <div className="flex gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row gap-3 pt-1">
             <button type="button" onClick={onClose}
               className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
               Cancel
@@ -233,8 +233,8 @@ export default function SupplyForecastsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button onClick={() => router.push("/farmer/dashboard")}
               className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
               <ArrowLeft size={18} />
@@ -249,15 +249,15 @@ export default function SupplyForecastsPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto sm:justify-end">
             <button onClick={() => router.push("/farmer/demand-board")}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+              className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto">
               <Package size={15} />
               <span className="hidden sm:inline">Demand Board</span>
             </button>
             {farms.length > 0 && (
               <button onClick={() => setShowModal(true)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition">
+                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition w-full sm:w-auto">
                 <Plus size={15} />
                 Add Forecast
               </button>
@@ -287,9 +287,9 @@ export default function SupplyForecastsPage() {
 
         {/* Filter + list */}
         <div className="bg-white border border-gray-200 rounded-2xl">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-6 py-4 border-b border-gray-100">
             <h2 className="text-sm font-semibold text-gray-800">My Forecasts</h2>
-            <div className="flex gap-1.5">
+            <div className="flex gap-1.5 flex-wrap">
               {["all", "forecast", "available", "sold", "cancelled"].map(s => (
                 <button key={s} onClick={() => setFilterStatus(s)}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
@@ -332,7 +332,7 @@ export default function SupplyForecastsPage() {
           ) : (
             <div className="divide-y divide-gray-50">
               {filtered.map(fc => (
-                <div key={fc.id} className="px-6 py-4 flex items-center gap-4 hover:bg-gray-50 transition group">
+                <div key={fc.id} className="px-6 py-4 flex flex-col sm:flex-row sm:items-center gap-4 hover:bg-gray-50 transition group">
                   <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
                     <Wheat size={18} className="text-emerald-600" />
                   </div>
@@ -354,7 +354,7 @@ export default function SupplyForecastsPage() {
                     </div>
                     {fc.notes && <p className="text-xs text-gray-400 mt-0.5 truncate">{fc.notes}</p>}
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto flex-wrap">
                     {fc.status === "forecast" && (
                       <button onClick={() => handleStatusChange(fc.id, "available")}
                         className="px-2.5 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200 rounded-lg hover:bg-emerald-50 transition">
@@ -368,7 +368,7 @@ export default function SupplyForecastsPage() {
                       </button>
                     )}
                     <button onClick={() => handleDelete(fc.id)}
-                      className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition">
+                      className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition">
                       <Trash2 size={15} />
                     </button>
                   </div>

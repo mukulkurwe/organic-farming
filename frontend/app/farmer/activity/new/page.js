@@ -207,8 +207,8 @@ export default function NewActivityPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => router.push("/farmer/dashboard")}
               className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
@@ -223,15 +223,15 @@ export default function NewActivityPage() {
           </div>
           <button
             onClick={() => router.push("/farmer/dashboard")}
-            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer w-full sm:w-auto"
           >
             Dashboard
           </button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl p-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl p-5 sm:p-8">
         <h2 className="text-2xl font-bold text-gray-800 text-center">Add Field Activity</h2>
         <p className="text-sm text-gray-500 text-center mt-1">Record today&apos;s farm work and resources</p>
 
@@ -331,24 +331,24 @@ export default function NewActivityPage() {
           </div>
 
           {/* Activity type */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Activity Type <span className="text-red-500">*</span>
             </label>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {activityTypes.map((type) => (
                 <button
                   key={type}
                   type="button"
                   onClick={() => setActivityType(type)}
-                  className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+                  className={`flex flex-col items-center justify-center p-3 sm:p-4 rounded-lg border-2 transition-all ${
                     activityType === type
                       ? "bg-emerald-50 border-emerald-500"
                       : "bg-white border-gray-300 hover:border-emerald-500"
                   }`}
                 >
-                  <span className="text-3xl mb-2">
+                  <span className="text-2xl sm:text-3xl mb-2">
                     {type === "sowing" && "🌱"}
                     {type === "transplanting" && "🌾"}
                     {type === "irrigation" && "💧"}
@@ -368,7 +368,7 @@ export default function NewActivityPage() {
 
           {/* Inputs */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
               <label className="block text-sm font-medium text-gray-600">
                 Inputs Used
               </label>
@@ -391,7 +391,7 @@ export default function NewActivityPage() {
                     <button
                       type="button"
                       onClick={() => removeInputRow(idx)}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full text-xs
+                      className="absolute top-2 right-2 md:-top-2 md:-right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full text-xs
                                  flex items-center justify-center hover:bg-red-200 transition cursor-pointer"
                       title="Remove input"
                     >
@@ -514,18 +514,18 @@ export default function NewActivityPage() {
           </div>
 
           {/* Submit */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={() => router.push("/farmer/dashboard")}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+              className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
             >
               {loading ? "Saving..." : "Save Activity"}
             </button>

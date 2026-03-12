@@ -102,7 +102,7 @@ function PostDemandModal({ crops, user, onClose, onCreated }) {
         </div>
 
         <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Your Name <span className="text-red-500">*</span></label>
               <input value={form.buyer_name} onChange={e => set("buyer_name", e.target.value)}
@@ -137,7 +137,7 @@ function PostDemandModal({ crops, user, onClose, onCreated }) {
             <datalist id="crop-demand-list">{crops.map(c => <option key={c.id} value={c.name} />)}</datalist>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Quantity Needed <span className="text-red-500">*</span></label>
               <div className="flex gap-2">
@@ -161,7 +161,7 @@ function PostDemandModal({ crops, user, onClose, onCreated }) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Deadline Date</label>
               <input type="date" value={form.deadline_date} onChange={e => set("deadline_date", e.target.value)}
@@ -182,7 +182,7 @@ function PostDemandModal({ crops, user, onClose, onCreated }) {
               className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
           </div>
 
-          <div className="flex gap-3 pt-1">
+          <div className="flex flex-col sm:flex-row gap-3 pt-1">
             <button type="button" onClick={onClose}
               className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
               Cancel
@@ -216,7 +216,7 @@ function DemandCard({ demand }) {
         <span className="text-xs text-gray-400 shrink-0">#{demand.id}</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2 mb-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 mb-3">
         <div className="flex items-center gap-1.5 text-xs text-gray-600">
           <Package size={12} className="text-gray-400 shrink-0" />
           <span className="font-medium">{Number(demand.quantity_needed).toLocaleString("en-IN")} {demand.unit}</span>
@@ -315,8 +315,8 @@ export default function DemandBoardPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button onClick={() => router.back()}
               className="p-2 rounded-xl hover:bg-gray-100 text-gray-500 transition">
               <ArrowLeft size={18} />
@@ -331,14 +331,14 @@ export default function DemandBoardPage() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto sm:justify-end">
             <button onClick={() => router.push("/farmer/supply")}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+              className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-semibold text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition w-full sm:w-auto">
               <TrendingUp size={15} />
               <span className="hidden sm:inline">My Supply</span>
             </button>
             <button onClick={() => setShowModal(true)}
-              className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+              className="flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition w-full sm:w-auto">
               <Plus size={15} />
               Post Demand
             </button>
@@ -348,7 +348,7 @@ export default function DemandBoardPage() {
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         {/* Stat row */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
             { label: "Open Requests",  value: stats.open,      color: "text-blue-600",    bg: "bg-blue-50",    icon: Clock3 },
             { label: "Matched",        value: stats.matched,   color: "text-amber-600",   bg: "bg-amber-50",   icon: Handshake },

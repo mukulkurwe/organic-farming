@@ -112,8 +112,8 @@ export default function SalesDashboard() {
     <div className="min-h-screen bg-gray-50">
       {/* Top Nav */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => router.push("/farmer/dashboard")}
               className="text-gray-400 hover:text-gray-600 transition"
@@ -123,18 +123,18 @@ export default function SalesDashboard() {
             <div className="h-5 w-px bg-gray-200" />
             <h1 className="text-lg font-semibold text-gray-900">Sales Overview</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto sm:justify-end">
             <select
               value={farmId}
               onChange={e => setFarmId(e.target.value)}
-              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="text-sm border border-gray-200 rounded-lg px-3 py-1.5 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 w-full sm:w-auto"
             >
               <option value="">All Farms</option>
               {farms.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
             </select>
             <button
               onClick={() => router.push("/farmer/sales/transactions/new")}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition shadow-sm"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition shadow-sm w-full sm:w-auto"
             >
               <ShoppingCart size={15} />
               Record Sale

@@ -90,8 +90,8 @@ export default function CreateFarmPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-2 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => router.push("/farmer/dashboard")}
               className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
@@ -106,7 +106,7 @@ export default function CreateFarmPage() {
           </div>
           <button
             onClick={() => router.push("/farmer/dashboard")}
-            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
+            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer w-full sm:w-auto"
           >
             Dashboard
           </button>
@@ -115,25 +115,25 @@ export default function CreateFarmPage() {
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Steps indicator */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex items-center gap-3 mb-8">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center gap-3 mb-8">
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-bold">1</span>
-            <span className="text-sm font-medium text-emerald-700 flex items-center gap-1"><HousePlus size={14} /> Farm Details</span>
+            <span className="text-xs sm:text-sm font-medium text-emerald-700 flex items-center gap-1"><HousePlus size={14} /> Farm Details</span>
           </div>
-          <div className="flex-1 h-0.5 bg-gray-300"></div>
+          <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">2</span>
-            <span className="text-sm text-gray-600 flex items-center gap-1"><MapPinned size={14} /> Draw Boundary</span>
+            <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1"><MapPinned size={14} /> Draw Boundary</span>
           </div>
-          <div className="flex-1 h-0.5 bg-gray-300"></div>
+          <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
           <div className="flex items-center gap-2">
             <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">3</span>
-            <span className="text-sm text-gray-600 flex items-center gap-1"><LayoutGrid size={14} /> Add Plots</span>
+            <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1"><LayoutGrid size={14} /> Add Plots</span>
           </div>
         </div>
 
         {/* Create Farm Form */}
-        <div className="max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
+        <div className="max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-8 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-6">
             Farm Details
           </h2>
@@ -190,11 +190,11 @@ export default function CreateFarmPage() {
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => router.push("/farmer/dashboard")}
-                className="px-5 py-3 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition font-medium cursor-pointer"
+                className="w-full sm:w-auto px-5 py-3 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition font-medium cursor-pointer"
               >
                 Cancel
               </button>
@@ -227,7 +227,7 @@ export default function CreateFarmPage() {
               {existingFarms.map((farm) => (
                 <div
                   key={farm.id}
-                  className="flex items-center justify-between border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-800">
@@ -244,16 +244,16 @@ export default function CreateFarmPage() {
                       {farm.boundary ? " · ✅ Boundary drawn" : " · ⏳ No boundary yet"}
                     </p>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex gap-2 w-full sm:w-auto shrink-0">
                     <button
                       onClick={() => router.push(`/farm/${farm.id}/map`)}
-                      className="px-3 py-1.5 text-sm rounded-lg border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition font-medium cursor-pointer"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition font-medium cursor-pointer"
                     >
                       Map
                     </button>
                     <button
                       onClick={() => router.push(`/farm/${farm.id}/plots`)}
-                      className="px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium cursor-pointer"
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium cursor-pointer"
                     >
                       Plots
                     </button>
