@@ -1,5 +1,3 @@
-
-
 import pool from "../config/db.js";
 // import { calculateArea } from "../utils/calculateArea.js";
 // import { calculateSlope } from "../utils/calculateSlope.js";
@@ -10,17 +8,23 @@ import pool from "../config/db.js";
 ============================ */
 export const createFarm = async (req, res) => {
   try {
-    const { name, location, owner_id } = req.body;
+    const { name, location } = req.body;
+    // owner_id must come from the verified JWT, never from the request body
+    const owner_id = req.user?.userId;
 
     if (!name || !name.trim()) {
       return res.status(400).json({ message: "Farm name is required" });
+    }
+
+    if (!owner_id) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     const result = await pool.query(
       `INSERT INTO farms (name, location, owner_id)
        VALUES ($1, $2, $3)
        RETURNING *`,
-      [name.trim(), location || null, owner_id || null]
+      [name.trim(), location || null, owner_id],
     );
 
     res.status(201).json(result.rows[0]);
@@ -35,7 +39,6 @@ export const createFarm = async (req, res) => {
 ============================ */
 
 // export const saveFarmBoundary = async (req, res) => {
-  
 
 //   try {
 
@@ -103,7 +106,7 @@ export const saveFarmBoundary = async (req, res) => {
        SET boundary = $1
        WHERE id = $2
        RETURNING id`,
-      [JSON.stringify(boundary), farmId]
+      [JSON.stringify(boundary), farmId],
     );
 
     if (result.rowCount === 0) {

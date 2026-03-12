@@ -14,8 +14,9 @@ export default function CreateFarmPage() {
     location: "",
   });
   const [loading, setLoading] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const [existingFarms, setExistingFarms] = useState([]);
-  const [farmsLoading, setFarmsLoading] = useState(true);
+  const [farmsLoading, setFarmsLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -30,6 +31,8 @@ export default function CreateFarmPage() {
       setUser(parsed);
     } catch {
       router.push("/login");
+    } finally {
+      setAuthChecked(true);
     }
   }, [router]);
 
@@ -37,11 +40,14 @@ export default function CreateFarmPage() {
   useEffect(() => {
     if (!user) return;
     async function loadFarms() {
+      setFarmsLoading(true);
       try {
-        const res = await api.get(`/farms?owner_id=${user.id}`);
+        // owner_id is resolved server-side from the JWT
+        const res = await api.get("/farms");
         setExistingFarms(res.data || []);
       } catch (err) {
         console.error("Load farms error:", err);
+        toast.error("Could not load your farms");
       } finally {
         setFarmsLoading(false);
       }
@@ -62,29 +68,40 @@ export default function CreateFarmPage() {
       return;
     }
 
+    // Guard: user must be loaded before submitting
+    if (!user) {
+      toast.error("Please login to continue");
+      router.push("/login");
+      return;
+    }
+
     setLoading(true);
+    let success = false;
     try {
+      // owner_id is resolved server-side from the JWT — do not send it from the client
       const response = await api.post("/farms", {
         name: formData.name.trim(),
         location: formData.location.trim() || null,
-        owner_id: user?.id,
       });
 
       const farm = response.data;
       toast.success("Farm created! Now draw the boundary on the map.");
+      success = true;
 
       setTimeout(() => {
         router.push(`/farm/${farm.id}/map`);
       }, 1200);
     } catch (error) {
       console.error("Create farm error:", error);
-      toast.error(
-        error.response?.data?.message || "Failed to create farm"
-      );
+      toast.error(error.response?.data?.message || "Failed to create farm");
     } finally {
-      setLoading(false);
+      // Keep the button in "Creating..." state during the redirect delay
+      if (!success) setLoading(false);
     }
   };
+
+  // Don't render anything until auth check resolves — prevents flash of form for unauthenticated users
+  if (!authChecked) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,8 +117,12 @@ export default function CreateFarmPage() {
             </button>
             <div className="h-5 w-px bg-gray-200" />
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Create Farm</h1>
-              <p className="text-xs text-gray-500">Set up farm details and boundary</p>
+              <h1 className="text-lg font-semibold text-gray-900">
+                Create Farm
+              </h1>
+              <p className="text-xs text-gray-500">
+                Set up farm details and boundary
+              </p>
             </div>
           </div>
           <button
@@ -114,28 +135,94 @@ export default function CreateFarmPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Steps indicator */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center gap-3 mb-8">
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-bold">1</span>
-            <span className="text-xs sm:text-sm font-medium text-emerald-700 flex items-center gap-1"><HousePlus size={14} /> Farm Details</span>
+        {/* ── Existing Farms section (shown first only when farms exist) ── */}
+        {farmsLoading ? (
+          <div className="text-center py-6 text-gray-500 text-sm mb-8">
+            Loading your farms...
           </div>
-          <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">2</span>
-            <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1"><MapPinned size={14} /> Draw Boundary</span>
+        ) : existingFarms.length > 0 ? (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mb-8">
+            <h2 className="text-lg font-bold text-gray-800 mb-4">
+              Your Farms ({existingFarms.length})
+            </h2>
+            <div className="space-y-3">
+              {existingFarms.map((farm) => (
+                <div
+                  key={farm.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
+                >
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{farm.name}</h3>
+                    <p className="text-sm text-gray-600">
+                      {farm.location || "No location set"}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Created{" "}
+                      {farm.created_at
+                        ? new Date(farm.created_at).toLocaleDateString()
+                        : "—"}
+                      {farm.boundary
+                        ? " · ✅ Boundary drawn"
+                        : " · ⏳ No boundary yet"}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 w-full sm:w-auto shrink-0">
+                    <button
+                      onClick={() => router.push(`/farm/${farm.id}/map`)}
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition font-medium cursor-pointer"
+                    >
+                      Map
+                    </button>
+                    <button
+                      onClick={() => router.push(`/farm/${farm.id}/plots`)}
+                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium cursor-pointer"
+                    >
+                      Plots
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">3</span>
-            <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1"><LayoutGrid size={14} /> Add Plots</span>
-          </div>
-        </div>
+        ) : null}
 
-        {/* Create Farm Form */}
-        <div className="max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-8 mb-8">
-          <h2 className="text-xl font-bold text-gray-800 mb-6">
-            Farm Details
+        {/* ── Add New Farm section ── */}
+        {/* Steps indicator — only shown when no existing farms (first-time flow) */}
+        {!farmsLoading && existingFarms.length === 0 && (
+          <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 sm:p-5 flex flex-col md:flex-row items-start md:items-center gap-3 mb-8">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm font-bold">
+                1
+              </span>
+              <span className="text-xs sm:text-sm font-medium text-emerald-700 flex items-center gap-1">
+                <HousePlus size={14} /> Farm Details
+              </span>
+            </div>
+            <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">
+                2
+              </span>
+              <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
+                <MapPinned size={14} /> Draw Boundary
+              </span>
+            </div>
+            <div className="hidden md:block flex-1 h-0.5 bg-gray-300"></div>
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-bold">
+                3
+              </span>
+              <span className="text-xs sm:text-sm text-gray-600 flex items-center gap-1">
+                <LayoutGrid size={14} /> Add Plots
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <HousePlus size={20} className="text-emerald-600" />
+            {existingFarms.length > 0 ? "Add Another Farm" : "Farm Details"}
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -151,7 +238,7 @@ export default function CreateFarmPage() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                autoFocus
+                autoFocus={existingFarms.length === 0}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
               />
             </div>
@@ -176,7 +263,9 @@ export default function CreateFarmPage() {
 
             {/* Info banner */}
             <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-start gap-3">
-              <span className="mt-0.5 text-emerald-600"><MapPinned size={18} /></span>
+              <span className="mt-0.5 text-emerald-600">
+                <MapPinned size={18} />
+              </span>
               <div>
                 <p className="text-sm font-semibold text-emerald-800">
                   Next step: Draw your farm boundary
@@ -201,10 +290,10 @@ export default function CreateFarmPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 px-5 py-3 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition cursor-pointer ${
+                className={`flex-1 px-5 py-3 rounded-lg font-semibold text-white bg-emerald-600 transition ${
                   loading
                     ? "opacity-60 cursor-not-allowed"
-                    : ""
+                    : "hover:bg-emerald-700 cursor-pointer"
                 }`}
               >
                 {loading ? "Creating..." : "Create Farm & Draw Boundary"}
@@ -212,57 +301,6 @@ export default function CreateFarmPage() {
             </div>
           </form>
         </div>
-
-        {/* Existing Farms */}
-        {farmsLoading ? (
-          <div className="text-center py-6 text-gray-500 text-sm">
-            Loading your farms...
-          </div>
-        ) : existingFarms.length > 0 ? (
-          <div className="max-w-3xl bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-            <h2 className="text-lg font-bold text-gray-800 mb-4">
-              Your Existing Farms ({existingFarms.length})
-            </h2>
-            <div className="space-y-3">
-              {existingFarms.map((farm) => (
-                <div
-                  key={farm.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition"
-                >
-                  <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {farm.name}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {farm.location || "No location set"}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Created{" "}
-                      {farm.created_at
-                        ? new Date(farm.created_at).toLocaleDateString()
-                        : "—"}
-                      {farm.boundary ? " · ✅ Boundary drawn" : " · ⏳ No boundary yet"}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 w-full sm:w-auto shrink-0">
-                    <button
-                      onClick={() => router.push(`/farm/${farm.id}/map`)}
-                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-emerald-300 text-emerald-700 hover:bg-emerald-50 transition font-medium cursor-pointer"
-                    >
-                      Map
-                    </button>
-                    <button
-                      onClick={() => router.push(`/farm/${farm.id}/plots`)}
-                      className="w-full sm:w-auto px-3 py-1.5 text-sm rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition font-medium cursor-pointer"
-                    >
-                      Plots
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
       </main>
     </div>
   );

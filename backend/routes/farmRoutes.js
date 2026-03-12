@@ -1,6 +1,3 @@
-
-
-
 // import express from "express";
 // import {
 //   createFarm,
@@ -21,9 +18,9 @@
 
 // export default router;
 
-
 import express from "express";
 import pool from "../config/db.js";
+import { authenticate } from "../middleware/auth.js";
 import {
   createFarm,
   saveFarmBoundary,
@@ -36,29 +33,25 @@ const router = express.Router();
    CREATE FARM
    POST /api/farms
 ========================================== */
-router.post("/farms", createFarm);
+router.post("/farms", authenticate, createFarm);
 
 /* ==========================================
    GET ALL FARMS
    GET /api/farms
 ========================================== */
-router.get("/farms", async (req, res) => {
+router.get("/farms", authenticate, async (req, res) => {
   try {
-    const { owner_id } = req.query;
-    let query = "SELECT * FROM farms";
-    const params = [];
-
-    if (owner_id) {
-      query += " WHERE owner_id = $1";
-      params.push(owner_id);
-    }
-
-    query += " ORDER BY created_at DESC, id DESC";
-    const result = await pool.query(query, params);
+    // always scope to the authenticated user — never trust a client-supplied owner_id
+    const owner_id = req.user.userId;
+    const query =
+      "SELECT * FROM farms WHERE owner_id = $1 ORDER BY created_at DESC, id DESC";
+    const result = await pool.query(query, [owner_id]);
     res.json(result.rows);
   } catch (err) {
     console.error("❌ /api/farms error:", err);
-    return res.status(500).json({ message: "Failed to fetch farms", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Failed to fetch farms", error: err.message });
   }
 });
 
@@ -72,7 +65,7 @@ router.get("/farms/:id/zones", async (req, res) => {
 
     const result = await pool.query(
       "SELECT * FROM zones WHERE farm_id = $1 ORDER BY id",
-      [farmId]
+      [farmId],
     );
 
     res.json(result.rows);
@@ -101,7 +94,7 @@ router.post("/farms/:id/zones", async (req, res) => {
       `INSERT INTO zones (farm_id, name, area)
        VALUES ($1, $2, $3)
        RETURNING *`,
-      [farmId, name.trim(), area || null]
+      [farmId, name.trim(), area || null],
     );
 
     res.status(201).json(result.rows[0]);
@@ -120,7 +113,7 @@ router.delete("/zones/:zoneId", async (req, res) => {
     const { zoneId } = req.params;
     const result = await pool.query(
       "DELETE FROM zones WHERE id = $1 RETURNING *",
-      [zoneId]
+      [zoneId],
     );
     if (result.rowCount === 0) {
       return res.status(404).json({ message: "Zone not found" });
@@ -136,7 +129,7 @@ router.delete("/zones/:zoneId", async (req, res) => {
    SAVE FARM BOUNDARY
    PUT /api/farms/:farmId/boundary
 ========================================== */
-router.put("/farms/:farmId/boundary", saveFarmBoundary);
+router.put("/farms/:farmId/boundary", authenticate, saveFarmBoundary);
 
 /* ==========================================
    OPTIONAL RECALCULATE
