@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiGet, apiPost } from "@/lib/api";
+import { ChevronRight, ClipboardList } from "lucide-react";
 
 export default function NewActivityPage() {
   const router = useRouter();
@@ -204,29 +205,42 @@ export default function NewActivityPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-green-200 to-green-300 flex justify-center py-8">
-      <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-2">
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/farmer/dashboard")}
+              className="text-gray-400 hover:text-gray-600 transition cursor-pointer"
+            >
+              <ChevronRight size={18} className="rotate-180" />
+            </button>
+            <div className="h-5 w-px bg-gray-200" />
+            <div className="flex items-center gap-2">
+              <ClipboardList size={18} className="text-emerald-600" />
+              <h1 className="text-lg font-semibold text-gray-900">Log Activity</h1>
+            </div>
+          </div>
           <button
             onClick={() => router.push("/farmer/dashboard")}
-            className="text-sm text-gray-600 hover:text-gray-800 flex items-center gap-1"
+            className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 transition cursor-pointer"
           >
-            <span>←</span> Back
+            Dashboard
           </button>
         </div>
+      </header>
 
-        <h1 className="text-2xl font-bold text-gray-800 text-center">
-          Add Field Activity
-        </h1>
-        <div className="h-1 w-16 bg-green-500 mx-auto mt-2 rounded-full" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-3xl mx-auto bg-white border border-gray-200 shadow-sm rounded-2xl p-8">
+        <h2 className="text-2xl font-bold text-gray-800 text-center">Add Field Activity</h2>
+        <p className="text-sm text-gray-500 text-center mt-1">Record today&apos;s farm work and resources</p>
 
         {/* Message Banner */}
         {message.text && (
           <div
             className={`mt-4 text-sm text-center rounded-lg px-3 py-2 ${
               message.type === "success"
-                ? "text-green-700 bg-green-50 border border-green-200"
+                ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
                 : "text-red-700 bg-red-50 border border-red-200"
             }`}
           >
@@ -247,7 +261,7 @@ export default function NewActivityPage() {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
               />
             </div>
 
@@ -260,7 +274,7 @@ export default function NewActivityPage() {
                 value={farmId}
                 onChange={(e) => setFarmId(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select farm</option>
                 {farms.map((f) => (
@@ -281,7 +295,7 @@ export default function NewActivityPage() {
                 onChange={(e) => setZoneId(e.target.value)}
                 disabled={!farmId}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500
                            disabled:bg-gray-100 disabled:cursor-not-allowed"
               >
                 <option value="">
@@ -304,7 +318,7 @@ export default function NewActivityPage() {
                 value={cropId}
                 onChange={(e) => setCropId(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                           text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
               >
                 <option value="">Select crop</option>
                 {crops.map((c) => (
@@ -330,8 +344,8 @@ export default function NewActivityPage() {
                   onClick={() => setActivityType(type)}
                   className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
                     activityType === type
-                      ? "bg-green-50 border-green-500"
-                      : "bg-white border-gray-300 hover:border-green-500"
+                      ? "bg-emerald-50 border-emerald-500"
+                      : "bg-white border-gray-300 hover:border-emerald-500"
                   }`}
                 >
                   <span className="text-3xl mb-2">
@@ -361,7 +375,7 @@ export default function NewActivityPage() {
               <button
                 type="button"
                 onClick={addInputRow}
-                className="text-xs text-green-600 hover:text-green-800"
+                className="text-xs text-emerald-600 hover:text-emerald-800 cursor-pointer"
               >
                 + Add another input
               </button>
@@ -378,7 +392,7 @@ export default function NewActivityPage() {
                       type="button"
                       onClick={() => removeInputRow(idx)}
                       className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full text-xs
-                                 flex items-center justify-center hover:bg-red-200 transition"
+                                 flex items-center justify-center hover:bg-red-200 transition cursor-pointer"
                       title="Remove input"
                     >
                       ✕
@@ -433,7 +447,7 @@ export default function NewActivityPage() {
                         handleInputChange(idx, "method", e.target.value)
                       }
                       className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
-                                 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500"
+                                 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     >
                       <option value="">Method</option>
                       <option value="manual_spraying">Manual Spraying</option>
@@ -471,7 +485,7 @@ export default function NewActivityPage() {
                       onClick={() => toggleWorker(w.id)}
                       className={`px-3 py-1 rounded-full text-xs border ${
                         active
-                          ? "bg-green-500 text-white border-green-500"
+                          ? "bg-emerald-500 text-white border-emerald-500"
                           : "bg-gray-50 text-gray-700 border-gray-300"
                       }`}
                     >
@@ -495,7 +509,7 @@ export default function NewActivityPage() {
               placeholder="Soil moisture, uniform emergence, pest spray only for tomato..."
               className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm
                          text-gray-900 placeholder:text-gray-400 bg-white
-                         focus:outline-none focus:ring-2 focus:ring-green-500"
+                         focus:outline-none focus:ring-2 focus:ring-emerald-500"
             />
           </div>
 
@@ -504,20 +518,21 @@ export default function NewActivityPage() {
             <button
               type="button"
               onClick={() => router.push("/farmer/dashboard")}
-              className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50"
+              className="px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700 disabled:opacity-60"
+              className="px-5 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 cursor-pointer"
             >
               {loading ? "Saving..." : "Save Activity"}
             </button>
           </div>
         </form>
       </div>
+      </main>
     </div>
   );
 }
